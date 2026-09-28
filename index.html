@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Central de CS · Stegia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   IDENTIDADE VISUAL STEGIA
+   Ajuste aqui as cores e fontes da marca. Tudo na interface usa estas
+   variáveis. (Valores provisórios: troque pelos do site stegia.com.br.)
+   ===================================================================== */
+:root {
+  /* Marca */
+  --marca-primaria: #0F1B3D;      /* azul-marinho: cabeçalho, títulos */
+  --marca-secundaria: #2F6BFF;    /* azul: links, foco, elementos ativos */
+  --marca-destaque: #6D4AFF;      /* violeta: botões de ação (CTA) */
+  --marca-destaque-hover: #5836E8;
+  --marca-suave: #EEF2FF;         /* fundo leve de itens ativos */
+
+  /* Fundo, superfícies e texto */
+  --fundo: #F5F7FB;
+  --superficie: #FFFFFF;
+  --superficie-2: #F0F3F9;
+  --borda: #DDE3EE;
+  --texto: #16203A;
+  --texto-suave: #5A6682;
+
+  /* Tipografia */
+  --fonte-titulo: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fonte-texto: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Forma */
+  --raio: 12px;
+  --raio-sm: 8px;
+  --raio-pill: 999px;
+  --sombra: 0 1px 2px rgba(15, 27, 61, .06), 0 4px 16px rgba(15, 27, 61, .06);
+  --sombra-forte: 0 12px 40px rgba(15, 27, 61, .22);
+
+  /* Cores de status (propositalmente distintas das cores da marca) */
+  --st-atrasado: #B42318;  --st-atrasado-bg: #FEECEB;
+  --st-hoje: #9A5B00;      --st-hoje-bg: #FFF4DB;
+  --st-proximo: #1F5FAE;   --st-proximo-bg: #E8F1FC;
+  --st-ok: #1C7C4A;        --st-ok-bg: #E6F5EC;
+  --st-neutro: #5A6682;    --st-neutro-bg: #EEF1F6;
+
+  /* Saúde do cliente */
+  --saude-verde: #1FA35C;
+  --saude-amarelo: #E3A008;
+  --saude-vermelho: #D92D20;
+}
+
+/* ============================ Base ============================ */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--fonte-texto);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--texto);
+  background: var(--fundo);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--fonte-titulo); color: var(--marca-primaria); margin: 0; line-height: 1.25; }
+h1 { font-size: 22px; } h2 { font-size: 18px; } h3 { font-size: 15px; }
+a { color: var(--marca-secundaria); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--marca-secundaria) 45%, transparent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.flex1 { flex: 1; }
+.suave { color: var(--texto-suave); }
+.pequeno { font-size: 12px; }
+.vazio { color: var(--texto-suave); padding: 18px; text-align: center; background: var(--superficie-2); border-radius: var(--raio-sm); }
+
+/* ============================ Cabeçalho ============================ */
+.topo {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 24px;
+  background: var(--marca-primaria); color: #fff;
+}
+.topo-marca { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.logo { display: flex; align-items: center; color: #fff; font-family: var(--fonte-titulo); font-weight: 700; font-size: 22px; letter-spacing: -.5px; }
+.logo:hover { text-decoration: none; }
+.logo img { height: 30px; display: block; }
+.logo .ponto { color: var(--marca-destaque); filter: brightness(1.5); }
+.topo-titulo { font-family: var(--fonte-titulo); font-weight: 500; font-size: 15px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,.25); white-space: nowrap; }
+.busca-gatilho {
+  flex: 1; max-width: 420px; margin-left: auto;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: var(--raio-pill);
+  border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: rgba(255,255,255,.85);
+  cursor: pointer; text-align: left;
+}
+.busca-gatilho:hover { background: rgba(255,255,255,.14); }
+.busca-gatilho span { flex: 1; }
+kbd { font-family: var(--fonte-texto); font-size: 11px; padding: 1px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,.3); }
+.novo-wrap { position: relative; }
+.novo-menu {
+  position: absolute; right: 0; top: calc(100% + 8px); min-width: 200px;
+  background: var(--superficie); color: var(--texto); border-radius: var(--raio); box-shadow: var(--sombra-forte);
+  padding: 6px; z-index: 40;
+}
+.novo-menu button { display: block; width: 100%; text-align: left; padding: 9px 12px; border: 0; background: none; border-radius: var(--raio-sm); cursor: pointer; }
+.novo-menu button:hover { background: var(--marca-suave); }
+
+/* Navegação */
+.abas-nav {
+  position: sticky; top: 54px; z-index: 20;
+  display: flex; gap: 4px; padding: 0 24px;
+  background: var(--superficie); border-bottom: 1px solid var(--borda);
+  overflow-x: auto; scrollbar-width: none;
+}
+.abas-nav a {
+  padding: 12px 14px; color: var(--texto-suave); font-weight: 500; white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+.abas-nav a:hover { color: var(--marca-primaria); text-decoration: none; }
+.abas-nav a.ativo { color: var(--marca-primaria); border-bottom-color: var(--marca-destaque); font-weight: 600; }
+
+main { max-width: 1320px; margin: 0 auto; padding: 24px; }
+.cab-pagina { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.cab-pagina p { margin: 2px 0 0; color: var(--texto-suave); }
+
+/* ============================ Botões ============================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 16px; border-radius: var(--raio-pill); border: 1px solid transparent;
+  font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s;
+}
+.btn-cta { background: var(--marca-destaque); color: #fff; }
+.btn-cta:hover { background: var(--marca-destaque-hover); }
+.btn-sec { background: var(--superficie); border-color: var(--borda); color: var(--marca-primaria); }
+.btn-sec:hover { border-color: var(--marca-secundaria); color: var(--marca-secundaria); }
+.btn-ghost { background: transparent; color: var(--texto-suave); }
+.btn-ghost:hover { background: var(--superficie-2); color: var(--texto); }
+.btn-perigo { background: var(--superficie); border-color: #F3C3BF; color: var(--st-atrasado); }
+.btn-perigo:hover { background: var(--st-atrasado-bg); }
+.btn-sm { padding: 5px 11px; font-size: 12.5px; }
+.btn-ok { background: var(--st-ok-bg); color: var(--st-ok); }
+.btn-ok:hover { background: #d3eedd; }
+.btn-icone { border: 0; background: none; font-size: 24px; line-height: 1; cursor: pointer; color: var(--texto-suave); padding: 4px 8px; border-radius: var(--raio-sm); }
+.btn-icone:hover { background: var(--superficie-2); }
+.grupo-botoes { display: flex; flex-wrap: wrap; gap: 6px; }
+.alternador { display: inline-flex; background: var(--superficie-2); border-radius: var(--raio-pill); padding: 3px; }
+.alternador button { border: 0; background: none; padding: 6px 14px; border-radius: var(--raio-pill); cursor: pointer; font-weight: 500; color: var(--texto-suave); }
+.alternador button.ativo { background: var(--superficie); color: var(--marca-primaria); box-shadow: var(--sombra); }
+
+/* ============================ Cartões e etiquetas ============================ */
+.card { background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio); box-shadow: var(--sombra); padding: 18px; }
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 9px; border-radius: var(--raio-pill); font-size: 12px; font-weight: 600;
+  background: var(--st-neutro-bg); color: var(--st-neutro); white-space: nowrap;
+}
+.tag-atrasado { background: var(--st-atrasado-bg); color: var(--st-atrasado); }
+.tag-hoje { background: var(--st-hoje-bg); color: var(--st-hoje); }
+.tag-proximo { background: var(--st-proximo-bg); color: var(--st-proximo); }
+.tag-ok { background: var(--st-ok-bg); color: var(--st-ok); }
+.tag-marca { background: var(--marca-suave); color: var(--marca-destaque-hover); }
+.saude { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.saude-verde { background: var(--saude-verde); }
+.saude-amarelo { background: var(--saude-amarelo); }
+.saude-vermelho { background: var(--saude-vermelho); }
+.saude-rotulo { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+
+/* Avatar do cliente (cor e iniciais consistentes em toda a interface) */
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 32px; height: 32px; border-radius: 9px;
+  font-family: var(--fonte-titulo); font-weight: 600; font-size: 13px; color: #fff;
+}
+.avatar-sm { width: 22px; height: 22px; border-radius: 6px; font-size: 10px; }
+.avatar-lg { width: 52px; height: 52px; border-radius: 14px; font-size: 20px; }
+.cli-nome { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--marca-primaria); }
+.cli-nome:hover { text-decoration: none; }
+.cli-nome:hover span:last-child { text-decoration: underline; }
+
+/* ============================ Tela Hoje ============================ */
+.contadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.contador { padding: 14px 16px; }
+.contador .num { font-family: var(--fonte-titulo); font-size: 28px; font-weight: 700; color: var(--marca-primaria); line-height: 1.1; }
+.contador .rot { color: var(--texto-suave); font-weight: 500; }
+.contador.alerta .num { color: var(--st-atrasado); }
+.areas-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.bloco { margin-bottom: 26px; }
+.bloco-cab { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.bloco-cab h2 { font-size: 16px; }
+.bloco-cab .qtd { font-weight: 700; padding: 1px 9px; border-radius: var(--raio-pill); font-size: 12px; }
+.bloco-atrasado h2 { color: var(--st-atrasado); }
+.bloco-atrasado .qtd { background: var(--st-atrasado-bg); color: var(--st-atrasado); }
+.bloco-hoje h2 { color: var(--st-hoje); }
+.bloco-hoje .qtd { background: var(--st-hoje-bg); color: var(--st-hoje); }
+.bloco-proximo .qtd { background: var(--st-proximo-bg); color: var(--st-proximo); }
+.itens { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+.item { background: var(--superficie); border: 1px solid var(--borda); border-left: 5px solid var(--st-proximo); border-radius: var(--raio); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--sombra); }
+.item-atrasado { border-left-color: var(--st-atrasado); background: linear-gradient(90deg, var(--st-atrasado-bg), var(--superficie) 40%); }
+.item-hoje { border-left-color: var(--saude-amarelo); }
+.item-topo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.item-topo .cli-nome { font-size: 15px; }
+.item-titulo { font-weight: 600; }
+.item-meta { color: var(--texto-suave); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.item-acoes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+
+/* ============================ Clientes ============================ */
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.filtros input[type=search] { flex: 1; min-width: 200px; }
+.grade-clientes { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.card-cliente { cursor: pointer; display: flex; flex-direction: column; gap: 10px; transition: border-color .15s, transform .15s; }
+.card-cliente:hover { border-color: var(--marca-secundaria); transform: translateY(-1px); }
+.card-cliente.sem-contato { border-color: #F3C3BF; box-shadow: 0 0 0 3px var(--st-atrasado-bg); }
+.card-cliente .linha { display: flex; align-items: center; gap: 10px; }
+.card-cliente .nome { font-family: var(--fonte-titulo); font-weight: 600; color: var(--marca-primaria); font-size: 15px; }
+.card-cliente .pendencias { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ============================ Ficha do cliente ============================ */
+.ficha-cab { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.ficha-cab .info { flex: 1; min-width: 240px; }
+.ficha-cab .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; color: var(--texto-suave); }
+.observacoes {
+  margin-top: 16px; padding: 14px 16px; border-radius: var(--raio-sm);
+  background: #FFF9E6; border: 1px solid #F5DC8F; color: #5B4300; white-space: pre-wrap;
+}
+.observacoes strong { display: block; font-family: var(--fonte-titulo); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.sugestao { margin-top: 8px; padding: 8px 12px; border-radius: var(--raio-sm); background: var(--superficie-2); font-size: 13px; }
+.abas { display: flex; gap: 4px; border-bottom: 1px solid var(--borda); margin: 22px 0 16px; overflow-x: auto; }
+.abas a { padding: 10px 14px; color: var(--texto-suave); font-weight: 500; border-bottom: 3px solid transparent; white-space: nowrap; }
+.abas a:hover { text-decoration: none; color: var(--marca-primaria); }
+.abas a.ativo { color: var(--marca-primaria); border-bottom-color: var(--marca-destaque); font-weight: 600; }
+.abas .n { font-size: 11px; background: var(--superficie-2); padding: 0 6px; border-radius: var(--raio-pill); margin-left: 4px; }
+
+.nota-rapida { display: flex; gap: 8px; margin-bottom: 18px; }
+.nota-rapida textarea { flex: 1; min-height: 44px; }
+.timeline { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--borda); }
+.timeline li { position: relative; padding: 0 0 16px 14px; }
+.timeline li::before { content: ''; position: absolute; left: -25px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--st-neutro); border: 2px solid var(--fundo); }
+.timeline li.t-nota::before { background: var(--marca-destaque); }
+.timeline li.t-followup::before { background: var(--marca-secundaria); }
+.timeline li.t-demanda::before { background: var(--saude-amarelo); }
+.timeline li.t-alerta::before { background: var(--saude-vermelho); }
+.timeline li.t-projeto::before { background: var(--saude-verde); }
+.timeline .quando { font-size: 12px; color: var(--texto-suave); }
+.timeline .texto { white-space: pre-wrap; }
+
+.lista { display: flex; flex-direction: column; gap: 10px; }
+.linha-item { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; padding: 12px 14px; background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio-sm); }
+.linha-item .corpo { flex: 1; min-width: 220px; }
+.linha-item.destaque-escalar { border-color: #F3C3BF; background: var(--st-atrasado-bg); }
+.contatos-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.contato { display: flex; flex-direction: column; gap: 2px; }
+.contato .nome { font-weight: 700; }
+
+/* Projetos */
+.projeto { margin-bottom: 14px; }
+.barra { height: 8px; border-radius: var(--raio-pill); background: var(--superficie-2); overflow: hidden; margin: 8px 0 12px; }
+.barra > span { display: block; height: 100%; background: linear-gradient(90deg, var(--marca-secundaria), var(--marca-destaque)); }
+.etapas { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.etapas label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.etapas .feito .nome-etapa { text-decoration: line-through; color: var(--texto-suave); }
+.etapas input { width: 17px; height: 17px; accent-color: var(--marca-destaque); }
+
+/* ============================ Kanban ============================ */
+.kanban { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; align-items: flex-start; }
+.kcol { flex: 0 0 272px; background: var(--superficie-2); border-radius: var(--raio); padding: 10px; min-height: 180px; transition: background .15s, box-shadow .15s; }
+.kcol.sobre { background: var(--marca-suave); box-shadow: inset 0 0 0 2px var(--marca-secundaria); }
+.kcol-cab { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 10px; font-family: var(--fonte-titulo); font-weight: 600; color: var(--marca-primaria); font-size: 13px; }
+.kcol-cab .qtd { background: var(--superficie); border-radius: var(--raio-pill); padding: 0 8px; font-size: 12px; color: var(--texto-suave); }
+.kcol[data-status="Retornar ao cliente"] .kcol-cab { color: var(--st-hoje); }
+.kcol[data-status="Concluída"] .kcol-cab { color: var(--st-ok); }
+.kcards { display: flex; flex-direction: column; gap: 8px; min-height: 40px; }
+.kcard { background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio-sm); padding: 10px 12px; cursor: grab; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 1px 2px rgba(15,27,61,.06); border-top: 3px solid var(--borda); }
+.kcard.arrastando { opacity: .5; }
+.kcard .cli-nome { font-size: 12.5px; }
+.kcard-titulo { font-weight: 600; }
+.kcard-meta { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 12px; color: var(--texto-suave); }
+.kcard select { font-size: 12px; padding: 4px 6px; }
+.prio-Baixa { border-top-color: #9AA6BF; }
+.prio-Média { border-top-color: var(--marca-secundaria); }
+.prio-Alta { border-top-color: var(--saude-amarelo); }
+.prio-Urgente { border-top-color: var(--saude-vermelho); }
+.tprio { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+.tprio-Urgente { color: var(--st-atrasado); }
+.tprio-Alta { color: var(--st-hoje); }
+
+/* ============================ Tabelas ============================ */
+.tabela-wrap { overflow-x: auto; background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio); }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--borda); vertical-align: top; }
+th { font-family: var(--fonte-titulo); font-weight: 600; font-size: 12px; color: var(--texto-suave); text-transform: uppercase; letter-spacing: .4px; background: var(--superficie-2); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+tr.escalar td { background: var(--st-atrasado-bg); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--borda); background: var(--superficie); border-radius: var(--raio-pill); padding: 5px 12px; cursor: pointer; font-weight: 500; }
+.chip.ativo { background: var(--marca-primaria); border-color: var(--marca-primaria); color: #fff; }
+.chip .n { opacity: .7; margin-left: 4px; }
+
+/* ============================ Formulários ============================ */
+input[type=text], input[type=search], input[type=email], input[type=tel], input[type=url], input[type=date], input[type=number], select, textarea {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--borda); border-radius: var(--raio-sm); background: var(--superficie);
+}
+.filtros select, .filtros input { width: auto; }
+textarea { min-height: 84px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--marca-secundaria); box-shadow: 0 0 0 3px color-mix(in srgb, var(--marca-secundaria) 20%, transparent); }
+.campo { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.campo > label, .campo > .rotulo { font-weight: 600; font-size: 13px; color: var(--marca-primaria); }
+.campo .ajuda { font-size: 12px; color: var(--texto-suave); }
+.duas { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.tres { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 12px; }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; }
+.check input { width: 17px; height: 17px; accent-color: var(--marca-destaque); }
+.etapa-linha { display: grid; grid-template-columns: auto 1fr 150px auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.etapa-linha input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--marca-destaque); }
+
+/* ============================ Painel lateral (drawer) ============================ */
+#overlay { position: fixed; inset: 0; background: rgba(15, 27, 61, .45); z-index: 50; opacity: 0; pointer-events: none; transition: opacity .2s; }
+body.drawer-aberto #overlay, body.busca-aberta #overlay { opacity: 1; pointer-events: auto; }
+#drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100vw); z-index: 60;
+  background: var(--superficie); box-shadow: var(--sombra-forte);
+  transform: translateX(100%); transition: transform .22s ease; display: flex;
+}
+body.drawer-aberto #drawer { transform: none; }
+.drawer-form { display: flex; flex-direction: column; width: 100%; height: 100%; }
+.drawer-topo { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--borda); }
+.drawer-corpo { flex: 1; overflow-y: auto; padding: 20px; }
+.drawer-rodape { display: flex; gap: 8px; align-items: center; padding: 14px 20px; border-top: 1px solid var(--borda); background: var(--superficie-2); }
+.msg-modelo { margin-bottom: 16px; }
+.msg-modelo textarea { min-height: 130px; }
+
+/* ============================ Busca global ============================ */
+#busca {
+  position: fixed; top: 10vh; left: 50%; transform: translateX(-50%); width: min(640px, calc(100vw - 24px)); z-index: 70;
+  background: var(--superficie); border-radius: var(--raio); box-shadow: var(--sombra-forte); overflow: hidden; display: none;
+}
+body.busca-aberta #busca { display: block; }
+#busca input { border: 0; border-bottom: 1px solid var(--borda); border-radius: 0; padding: 16px 18px; font-size: 16px; box-shadow: none; }
+#busca-res { max-height: 60vh; overflow-y: auto; padding: 6px; }
+.res { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: var(--raio-sm); cursor: pointer; color: var(--texto); }
+.res:hover, .res.sel { background: var(--marca-suave); text-decoration: none; }
+.res .t { font-weight: 600; }
+.res .s { font-size: 12px; color: var(--texto-suave); }
+.res .tag { margin-left: auto; }
+
+/* ============================ Avisos (toasts) ============================ */
+#toasts { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 80; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.toast { background: var(--marca-primaria); color: #fff; padding: 10px 16px; border-radius: var(--raio-pill); box-shadow: var(--sombra-forte); font-weight: 500; animation: sobe .2s ease; max-width: calc(100vw - 32px); }
+.toast.erro { background: var(--st-atrasado); }
+@keyframes sobe { from { transform: translateY(10px); opacity: 0; } }
+
+/* ============================ Responsivo ============================ */
+@media (max-width: 760px) {
+  .topo { padding: 10px 16px; gap: 10px; }
+  .topo-titulo { display: none; }
+  .busca-gatilho span, .busca-gatilho kbd { display: none; }
+  .busca-gatilho { flex: 0 0 auto; margin-left: auto; }
+  .abas-nav { padding: 0 8px; }
+  main { padding: 16px; }
+  .itens { grid-template-columns: 1fr; }
+  .duas, .tres { grid-template-columns: 1fr; }
+  .etapa-linha { grid-template-columns: auto 1fr auto; }
+  .etapa-linha input[type=date] { grid-column: 2 / 3; }
+  .kcol { flex-basis: 250px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ Cabeçalho ============================ -->
+<header class="topo">
+  <div class="topo-marca">
+    <a href="#/hoje" class="logo" id="logo" aria-label="Stegia — início"></a>
+    <span class="topo-titulo">Central de CS</span>
+  </div>
+  <button class="busca-gatilho" data-action="busca-abrir" aria-label="Busca global">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <span>Buscar cliente, contato, follow-up…</span><kbd>/</kbd>
+  </button>
+  <div class="novo-wrap">
+    <button class="btn btn-cta" data-action="novo-toggle" aria-haspopup="true">+ Novo</button>
+    <div class="novo-menu" id="novo-menu" hidden>
+      <button data-action="novo" data-tipo="followup">Follow-up</button>
+      <button data-action="novo" data-tipo="demanda">Demanda / handoff</button>
+      <button data-action="novo" data-tipo="nota">Nota na linha do tempo</button>
+      <button data-action="novo" data-tipo="cliente">Cliente</button>
+    </div>
+  </div>
+</header>
+
+<nav class="abas-nav" id="nav">
+  <a href="#/hoje" data-rota="hoje">Hoje</a>
+  <a href="#/clientes" data-rota="clientes">Clientes</a>
+  <a href="#/demandas" data-rota="demandas">Demandas / Handoffs</a>
+  <a href="#/followups" data-rota="followups">Follow-ups</a>
+  <a href="#/modelos" data-rota="modelos">Modelos de mensagem</a>
+  <a href="#/config" data-rota="config">Configurações</a>
+</nav>
+
+<main id="app"></main>
+
+<div id="overlay"></div>
+<aside id="drawer" aria-modal="true" role="dialog"></aside>
+<div id="busca" role="dialog" aria-label="Busca global">
+  <input type="search" id="busca-input" placeholder="Buscar por cliente, contato, follow-up ou demanda…" autocomplete="off">
+  <div id="busca-res"></div>
+</div>
+<div id="toasts"></div>
+<input type="file" id="arquivo-importar" accept="application/json,.json" hidden>
+<datalist id="dl-clientes"></datalist>
+<datalist id="dl-responsaveis"></datalist>
+
+<script>
+'use strict';
+
+/* =====================================================================
+   CONFIGURAÇÃO GERAL
+   ===================================================================== */
+// Cole aqui a URL (ou caminho local) do logo da Stegia. Vazio = logotipo em texto.
+const LOGO_URL = '';
+const TZ = 'America/Sao_Paulo';
+const STORAGE_KEY = 'central-cs-stegia:v1';
+
+/* =====================================================================
+   CONSTANTES DE DOMÍNIO
+   ===================================================================== */
+const STATUS_CLIENTE = ['Onboarding', 'Em implantação', 'Ativo', 'Em risco', 'Pausado', 'Encerrado'];
+const SAUDE_ROTULO = { verde: 'Verde', amarelo: 'Amarelo', vermelho: 'Vermelho' };
+const CANAIS = ['E-mail', 'WhatsApp', 'Reunião', 'Ligação', 'Slack/Teams'];
+const FU = {
+  AGUARDANDO: 'Aguardando cliente',
+  RESPONDIDO: 'Respondido',
+  ESCALAR: 'Sem retorno — escalar',
+  CONCLUIDO: 'Concluído'
+};
+const STATUS_FU = Object.values(FU);
+const STATUS_DEMANDA = ['Nova', 'Enviada para área', 'Em andamento', 'Aguardando cliente', 'Aguardando área', 'Retornar ao cliente', 'Concluída'];
+const DM_CONCLUIDA = 'Concluída';
+const DM_RETORNAR = 'Retornar ao cliente';
+const AREA_INTERNA = 'Interno CS'; // demandas desta área não geram "Dar retorno ao cliente"
+const PRIORIDADES = ['Baixa', 'Média', 'Alta', 'Urgente'];
+const STATUS_PROJETO = ['Planejado', 'Em andamento', 'Pausado', 'Concluído'];
+// Paleta dos avatares (distinta das cores de status)
+const CORES_AVATAR = ['#2F6BFF', '#6D4AFF', '#0E9384', '#C11574', '#7A5AF8', '#155EEF', '#DD2590', '#3E4784', '#107569', '#9E77ED', '#0086C9', '#4E5BA6'];
+
+function configPadrao() {
+  return {
+    cadencia: [2, 3, 5],          // dias úteis até a próxima cobrança na 1ª, 2ª e 3ª tentativa
+    limiteSemContato: 15,         // destacar clientes sem contato há mais de X dias
+    responsaveis: ['Marina (Operacional)', 'Rafael (Operacional)', 'Juliana (Financeiro)', 'Bruno (Comercial)'],
+    areas: ['Operacional', 'Financeiro', 'Comercial', 'Suporte Pipefy', AREA_INTERNA]
+  };
+}
+
+function modelosPadrao() {
+  return [
+    { id: uid(), nome: '1º follow-up', texto: 'Olá, {contato}! Tudo bem?\n\nPassando para retomar o assunto "{assunto}", que enviei em {data}. Conseguiu dar uma olhada? Se precisar de algum ajuste ou de uma conversa rápida, fico à disposição.\n\nAbraço!' },
+    { id: uid(), nome: '2ª cobrança', texto: 'Oi, {contato}! Voltando aqui sobre "{assunto}" (enviado em {data}).\n\nEsse retorno é importante para seguirmos com as próximas etapas da {cliente} sem atrasos. Consegue me responder até amanhã? Se for mais fácil, resolvemos numa ligação de 10 minutos.' },
+    { id: uid(), nome: 'Retorno do financeiro', texto: 'Olá, {contato}! Tenho o retorno do nosso financeiro sobre "{assunto}":\n\n{retorno}\n\nQualquer dúvida, é só me chamar.' },
+    { id: uid(), nome: 'Envio para validação', texto: 'Olá, {contato}! A entrega "{assunto}" da {cliente} está pronta para validação.\n\nPode testar e me dar um retorno até {data}? Se encontrar algum ponto de ajuste, me conta que eu alinho com o time operacional.' },
+    { id: uid(), nome: 'Agendamento de reunião', texto: 'Olá, {contato}! Gostaria de agendar uma conversa sobre "{assunto}".\n\nTenho disponibilidade a partir de {data}. Qual o melhor dia e horário para você?' }
+  ];
+}
+
+/* =====================================================================
+   UTILITÁRIOS
+   ===================================================================== */
+const $ = (sel, raiz = document) => raiz.querySelector(sel);
+const $$ = (sel, raiz = document) => Array.from(raiz.querySelectorAll(sel));
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function norm(s) { return String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
+function opcoes(lista, selecionado) {
+  return lista.map(o => {
+    const [v, r] = Array.isArray(o) ? o : [o, o];
+    return `<option value="${esc(v)}"${v === selecionado ? ' selected' : ''}>${esc(r)}</option>`;
+  }).join('');
+}
+function plural(n, s, p) { return `${n} ${n === 1 ? s : p}`; }
+
+/* ---------- Datas (sempre no fuso America/Sao_Paulo, formato AAAA-MM-DD internamente) ---------- */
+const fmtISO = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+const fmtTsI = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+function hoje() { return fmtISO.format(new Date()); }
+function dataDeTs(iso) { return fmtISO.format(new Date(iso)); }
+function parseD(d) { const [y, m, dd] = d.split('-').map(Number); return new Date(Date.UTC(y, m - 1, dd)); }
+function toD(dt) { return dt.toISOString().slice(0, 10); }
+function addDias(d, n) { const x = parseD(d); x.setUTCDate(x.getUTCDate() + n); return toD(x); }
+/** Soma dias úteis, pulando sábados e domingos. */
+function addDiasUteis(d, n) {
+  const x = parseD(d); let c = 0;
+  while (c < n) { x.setUTCDate(x.getUTCDate() + 1); const w = x.getUTCDay(); if (w !== 0 && w !== 6) c++; }
+  return toD(x);
+}
+function diffDias(a, b) { return Math.round((parseD(b) - parseD(a)) / 86400000); }
+function fmtData(d) { if (!d) return '—'; const [y, m, dd] = d.split('-'); return `${dd}/${m}/${y}`; }
+function fmtTs(iso) { return fmtTsI.format(new Date(iso)).replace(',', ' às'); }
+function relDias(d) {
+  if (!d) return '—';
+  const n = diffDias(d, hoje());
+  if (n === 0) return 'hoje';
+  if (n === 1) return 'ontem';
+  if (n > 1) return `há ${n} dias`;
+  if (n === -1) return 'amanhã';
+  return `em ${-n} dias`;
+}
+
+/* =====================================================================
+   ARMAZENAMENTO (localStorage)
+   ===================================================================== */
+let db;
+
+function estadoVazio() {
+  return {
+    versao: 1,
+    clientes: [], contatos: [], followups: [], demandas: [], projetos: [],
+    pendencias: [],   // "Dar retorno ao cliente" gerado automaticamente pelas demandas
+    timeline: [],
+    modelos: modelosPadrao(),
+    config: configPadrao()
+  };
+}
+
+function carregar() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      db = Object.assign(estadoVazio(), JSON.parse(raw));
+      db.config = Object.assign(configPadrao(), db.config);
+      return;
+    }
+  } catch (e) { console.warn('Falha ao ler dados salvos', e); }
+  // Primeira abertura: carrega dados de exemplo
+  db = estadoVazio();
+  semearExemplos();
+  salvar();
+}
+
+function salvar() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+  catch (e) { toast('Não foi possível salvar no navegador. Exporte um backup!', 'erro'); }
+}
+
+/** Salva, redesenha a tela e atualiza os autocompletes. Use após qualquer alteração. */
+function persistir() { salvar(); atualizarDatalists(); render(); }
+
+/* ---------- Consultas ---------- */
+const cliente = id => db.clientes.find(c => c.id === id);
+const contato = id => db.contatos.find(c => c.id === id);
+const doCliente = (colecao, id) => db[colecao].filter(x => x.clienteId === id);
+function contatoPrincipal(clienteId) {
+  const cs = doCliente('contatos', clienteId);
+  return cs.find(c => c.principal) || cs[0];
+}
+function resolverCliente(nome) {
+  const n = norm(nome);
+  return db.clientes.find(c => norm(c.nome) === n);
+}
+
+/* ---------- Linha do tempo ---------- */
+function registrar(clienteId, tipo, texto, ts) {
+  if (!clienteId) return;
+  db.timeline.push({ id: uid(), clienteId, ts: ts || new Date().toISOString(), tipo, texto });
+}
+
+/* =====================================================================
+   REGRAS DE NEGÓCIO
+   ===================================================================== */
+
+/** Dias úteis até a próxima cobrança, conforme o nº da tentativa (1ª, 2ª, 3ª+). */
+function cadenciaPara(tentativa) {
+  const c = db.config.cadencia;
+  return Number(c[Math.min(Math.max(tentativa, 1), 3) - 1]) || 2;
+}
+function sugerirProximaCobranca(dataBase, tentativa) {
+  return addDiasUteis(dataBase || hoje(), cadenciaPara(tentativa));
+}
+
+/** Escalonamento: após 3 tentativas sem resposta, marca "Sem retorno — escalar". Retorna true se escalou. */
+function aplicarEscalonamento(f) {
+  if (f.status === FU.AGUARDANDO && Number(f.tentativas) >= 3) {
+    f.status = FU.ESCALAR;
+    registrar(f.clienteId, 'alerta', `Follow-up "${f.assunto}" escalonado após ${f.tentativas} tentativas sem resposta.`);
+    return true;
+  }
+  return false;
+}
+
+/** Depois de um escalonamento, sugere marcar o cliente como "Em risco". */
+function sugerirEmRisco(clienteId) {
+  const c = cliente(clienteId);
+  if (!c || c.status === 'Em risco') return;
+  if (confirm(`O follow-up com ${c.nome} está sem retorno após 3 tentativas.\n\nMarcar o cliente como "Em risco"?`)) {
+    registrar(c.id, 'alerta', `Status do cliente alterado: ${c.status} → Em risco (sugestão por escalonamento).`);
+    c.status = 'Em risco';
+  }
+}
+
+/** Muda o status de uma demanda aplicando a regra de "Dar retorno ao cliente". */
+function mudarStatusDemanda(d, novo, { semPendencia = false } = {}) {
+  if (d.status === novo) return;
+  const antes = d.status;
+  d.status = novo;
+  d.atualizadoEm = new Date().toISOString();
+  registrar(d.clienteId, 'demanda', `Demanda "${d.titulo}": ${antes} → ${novo}.`);
+  if (!semPendencia) gerarPendenciaRetorno(d);
+}
+
+function gerarPendenciaRetorno(d) {
+  if (d.area === AREA_INTERNA) return;
+  if (d.status !== DM_CONCLUIDA && d.status !== DM_RETORNAR) return;
+  if (db.pendencias.some(p => p.demandaId === d.id && !p.concluida)) return;
+  db.pendencias.push({ id: uid(), clienteId: d.clienteId, demandaId: d.id, titulo: `Dar retorno ao cliente: ${d.titulo}`, data: hoje(), concluida: false });
+  registrar(d.clienteId, 'demanda', `Pendência criada: dar retorno ao cliente sobre "${d.titulo}" (${d.area}).`);
+  toast('Pendência "Dar retorno ao cliente" criada na tela Hoje');
+}
+
+/** Data do último contato com o cliente (follow-ups e notas). */
+function ultimoContato(clienteId) {
+  let ult = null;
+  const maior = d => { if (d && (!ult || d > ult)) ult = d; };
+  doCliente('followups', clienteId).forEach(f => { maior(f.dataEnvio); maior(f.ultimaCobranca); maior(f.dataResposta); });
+  doCliente('timeline', clienteId).forEach(t => { if (t.tipo === 'nota') maior(dataDeTs(t.ts)); });
+  if (!ult) ult = cliente(clienteId)?.dataInicio || null;
+  return ult;
+}
+function diasSemContato(clienteId) {
+  const u = ultimoContato(clienteId);
+  return u ? diffDias(u, hoje()) : null;
+}
+
+const demandaAberta = d => d.status !== DM_CONCLUIDA;
+const fuAberto = f => f.status === FU.AGUARDANDO || f.status === FU.ESCALAR;
+
+/** Saúde automática (sugestão). */
+function saudeAuto(clienteId) {
+  const t = hoje(); const motivos = { vermelho: [], amarelo: [] };
+  const fus = doCliente('followups', clienteId);
+  if (fus.some(f => f.status === FU.ESCALAR)) motivos.vermelho.push('follow-up escalonado');
+  const dsc = diasSemContato(clienteId);
+  if (dsc !== null && dsc > 30) motivos.vermelho.push(`${dsc} dias sem contato`);
+  if (fus.some(f => f.status === FU.AGUARDANDO && f.dataEnvio && diffDias(f.dataEnvio, t) > 7)) motivos.amarelo.push('follow-up sem resposta há mais de 7 dias');
+  if (doCliente('demandas', clienteId).some(d => demandaAberta(d) && d.prazo && d.prazo < t)) motivos.amarelo.push('demanda atrasada');
+  if (motivos.vermelho.length) return { cor: 'vermelho', motivos: motivos.vermelho };
+  if (motivos.amarelo.length) return { cor: 'amarelo', motivos: motivos.amarelo };
+  return { cor: 'verde', motivos: [] };
+}
+function saudeEfetiva(c) { return !c.saude || c.saude === 'auto' ? saudeAuto(c.id).cor : c.saude; }
+
+function pendenciasCliente(clienteId) {
+  return {
+    fus: doCliente('followups', clienteId).filter(fuAberto).length,
+    dms: doCliente('demandas', clienteId).filter(demandaAberta).length,
+    rets: doCliente('pendencias', clienteId).filter(p => !p.concluida).length
+  };
+}
+
+/* =====================================================================
+   COMPONENTES DE INTERFACE
+   ===================================================================== */
+function corCliente(c) {
+  let h = 0; const s = c ? c.id : '';
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return CORES_AVATAR[h % CORES_AVATAR.length];
+}
+function iniciais(nome) {
+  const ignorar = ['de', 'da', 'do', 'das', 'dos', 'e', 'ltda', 'sa', 's.a.', 'me', 'eireli'];
+  const partes = String(nome || '?').split(/\s+/).filter(p => p && !ignorar.includes(p.toLowerCase()));
+  return ((partes[0]?.[0] || '?') + (partes[1]?.[0] || '')).toUpperCase();
+}
+function avatar(c, tam = '') {
+  return `<span class="avatar ${tam ? 'avatar-' + tam : ''}" style="background:${corCliente(c)}" aria-hidden="true">${esc(iniciais(c?.nome))}</span>`;
+}
+function nomeCliente(c, tam = 'sm') {
+  if (!c) return '<span class="suave">Cliente removido</span>';
+  return `<a class="cli-nome" href="#/cliente/${c.id}">${avatar(c, tam)}<span>${esc(c.nome)}</span></a>`;
+}
+function saudeBadge(cor) { return `<span class="saude-rotulo"><span class="saude saude-${cor}"></span>${SAUDE_ROTULO[cor]}</span>`; }
+function tagStatusFu(s) {
+  const cls = { [FU.AGUARDANDO]: 'tag-hoje', [FU.RESPONDIDO]: 'tag-proximo', [FU.ESCALAR]: 'tag-atrasado', [FU.CONCLUIDO]: 'tag-ok' }[s] || '';
+  return `<span class="tag ${cls}">${esc(s)}</span>`;
+}
+function tagStatusDm(s) {
+  const cls = s === DM_CONCLUIDA ? 'tag-ok' : s === DM_RETORNAR ? 'tag-hoje' : s === 'Nova' ? 'tag-marca' : 'tag-proximo';
+  return `<span class="tag ${cls}">${esc(s)}</span>`;
+}
+function tagStatusCliente(s) {
+  const cls = s === 'Em risco' ? 'tag-atrasado' : s === 'Ativo' ? 'tag-ok' : s === 'Encerrado' || s === 'Pausado' ? '' : 'tag-proximo';
+  return `<span class="tag ${cls}">${esc(s)}</span>`;
+}
+function tagPrazo(prazo, aberta = true) {
+  if (!prazo) return '<span class="suave">sem prazo</span>';
+  const t = hoje();
+  const cls = !aberta ? '' : prazo < t ? 'tag-atrasado' : prazo === t ? 'tag-hoje' : '';
+  return `<span class="tag ${cls}">prazo ${fmtData(prazo)}</span>`;
+}
+
+function toast(msg, tipo = '') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + tipo; el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+async function copiarTexto(texto) {
+  try { await navigator.clipboard.writeText(texto); }
+  catch {
+    const ta = document.createElement('textarea'); ta.value = texto; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  toast('Mensagem copiada!');
+}
+
+function atualizarDatalists() {
+  $('#dl-clientes').innerHTML = [...db.clientes].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${esc(c.nome)}"></option>`).join('');
+  $('#dl-responsaveis').innerHTML = db.config.responsaveis.map(r => `<option value="${esc(r)}"></option>`).join('');
+}
+
+/* =====================================================================
+   ROTEAMENTO (hash) E RENDERIZAÇÃO
+   ===================================================================== */
+const ui = {
+  cliFiltro: { q: '', status: '', saude: '', resp: '' },
+  dmFiltro: { area: '', cliente: '' },
+  dmVisao: 'kanban',
+  fuFiltro: { status: '', cliente: '' },
+  modeloCtx: ''
+};
+
+function rotaAtual() {
+  const partes = (location.hash || '#/hoje').replace(/^#\/?/, '').split('/');
+  return { nome: partes[0] || 'hoje', id: partes[1], aba: partes[2] };
+}
+function clienteDaRota() { const r = rotaAtual(); return r.nome === 'cliente' ? r.id : ''; }
+
+function render() {
+  const r = rotaAtual();
+  $$('#nav a').forEach(a => a.classList.toggle('ativo', a.dataset.rota === r.nome || (r.nome === 'cliente' && a.dataset.rota === 'clientes')));
+  const telas = { hoje: telaHoje, clientes: telaClientes, cliente: () => telaCliente(r.id, r.aba), demandas: telaDemandas, followups: telaFollowups, modelos: telaModelos, config: telaConfig };
+  const app = $('#app');
+  app.innerHTML = (telas[r.nome] || telaHoje)();
+  if (r.nome === 'clientes') atualizarListaClientes();
+}
+
+/* ---------------------------- Tela HOJE ---------------------------- */
+function telaHoje() {
+  const t = hoje(), lim = addDias(t, 7);
+  const itens = [];
+  const pdAbertas = db.pendencias.filter(p => !p.concluida);
+  db.followups.filter(f => fuAberto(f) && f.proximaCobranca).forEach(f => itens.push({ tipo: 'fu', data: f.proximaCobranca, obj: f }));
+  pdAbertas.forEach(p => itens.push({ tipo: 'pd', data: p.data, obj: p }));
+  db.demandas.filter(d => demandaAberta(d) && d.prazo && !pdAbertas.some(p => p.demandaId === d.id))
+    .forEach(d => itens.push({ tipo: 'dm', data: d.prazo, obj: d }));
+
+  const peso = i => i.tipo === 'dm' ? 3 - PRIORIDADES.indexOf(i.obj.prioridade) : i.tipo === 'pd' ? -1 : 0;
+  itens.sort((a, b) => a.data.localeCompare(b.data) || peso(a) - peso(b));
+  const atrasados = itens.filter(i => i.data < t);
+  const paraHoje = itens.filter(i => i.data === t);
+  const proximos = itens.filter(i => i.data > t && i.data <= lim);
+
+  // Contadores
+  const fuAguardando = db.followups.filter(fuAberto).length;
+  const escalados = db.followups.filter(f => f.status === FU.ESCALAR).length;
+  const porArea = {};
+  db.demandas.filter(demandaAberta).forEach(d => { porArea[d.area] = (porArea[d.area] || 0) + 1; });
+  const emRisco = db.clientes.filter(c => c.status === 'Em risco' || saudeEfetiva(c) === 'vermelho');
+  const semContato = db.clientes.filter(c => c.status !== 'Encerrado' && (diasSemContato(c.id) ?? 0) > db.config.limiteSemContato);
+
+  const dataExtenso = new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+
+  const bloco = (cls, titulo, lista, vazio) => `
+    <section class="bloco bloco-${cls}">
+      <div class="bloco-cab"><h2>${titulo}</h2><span class="qtd">${lista.length}</span></div>
+      ${lista.length ? `<div class="itens">${lista.map(i => cardHoje(i, cls)).join('')}</div>` : `<div class="vazio">${vazio}</div>`}
+    </section>`;
+
+  return `
+    <div class="cab-pagina">
+      <div><h1>Bom dia! Isto é o que pede sua atenção</h1><p>${esc(dataExtenso.charAt(0).toUpperCase() + dataExtenso.slice(1))}</p></div>
+    </div>
+    <div class="contadores">
+      <div class="card contador"><div class="num">${fuAguardando}</div><div class="rot">follow-ups aguardando</div>${escalados ? `<div class="areas-chips"><span class="tag tag-atrasado">${plural(escalados, 'para escalar', 'para escalar')}</span></div>` : ''}</div>
+      <div class="card contador"><div class="num">${Object.values(porArea).reduce((a, b) => a + b, 0)}</div><div class="rot">demandas abertas</div>
+        <div class="areas-chips">${Object.entries(porArea).map(([a, n]) => `<a class="tag" href="#/demandas" data-action="filtrar-area" data-area="${esc(a)}">${esc(a)}: ${n}</a>`).join('') || '<span class="suave pequeno">nenhuma</span>'}</div></div>
+      <div class="card contador ${emRisco.length ? 'alerta' : ''}"><div class="num">${emRisco.length}</div><div class="rot">clientes em risco</div>
+        <div class="areas-chips">${emRisco.slice(0, 4).map(c => `<a class="tag tag-atrasado" href="#/cliente/${c.id}">${esc(c.nome)}</a>`).join('')}</div></div>
+      <div class="card contador"><div class="num">${db.pendencias.filter(p => !p.concluida).length}</div><div class="rot">retornos a dar ao cliente</div></div>
+    </div>
+    ${bloco('atrasado', 'Atrasados', atrasados, 'Nada atrasado. Ótimo trabalho!')}
+    ${bloco('hoje', 'Para hoje', paraHoje, 'Nada agendado para hoje.')}
+    ${bloco('proximo', 'Próximos 7 dias', proximos, 'Nada nos próximos 7 dias.')}
+    ${semContato.length ? `
+    <section class="bloco">
+      <div class="bloco-cab"><h2>Sem contato há mais de ${db.config.limiteSemContato} dias</h2><span class="qtd tag">${semContato.length}</span></div>
+      <div class="grupo-botoes">${semContato.map(c => `<a class="tag tag-atrasado" href="#/cliente/${c.id}">${esc(c.nome)} · ${diasSemContato(c.id)} dias</a>`).join('')}</div>
+    </section>` : ''}`;
+}
+
+function cardHoje(i, bucket) {
+  const o = i.obj; const c = cliente(o.clienteId);
+  const abrir = `<a class="btn btn-ghost btn-sm" href="#/cliente/${o.clienteId}">Abrir cliente</a>`;
+  if (i.tipo === 'fu') {
+    const ct = contato(o.contatoId);
+    const dias = o.dataEnvio ? diffDias(o.dataEnvio, hoje()) : 0;
+    return `<article class="item item-${bucket}">
+      <div class="item-topo">${nomeCliente(c, '')}<span class="tag tag-marca">Follow-up</span>${o.status === FU.ESCALAR ? tagStatusFu(o.status) : ''}</div>
+      <div class="item-titulo">${esc(o.assunto)}</div>
+      <div class="item-meta">
+        <span>${esc(o.canal)}${ct ? ' · ' + esc(ct.nome) : ''}</span>
+        <span><strong>${dias <= 0 ? 'enviado hoje' : `sem resposta há ${plural(dias, 'dia', 'dias')}`}</strong></span>
+        <span>${o.tentativas}ª tentativa</span>
+        <span>cobrança: ${fmtData(o.proximaCobranca)}</span>
+      </div>
+      <div class="item-acoes">
+        <button class="btn btn-cta btn-sm" data-action="fu-cobrei" data-id="${o.id}">Cobrei de novo</button>
+        <button class="btn btn-sec btn-sm" data-action="fu-respondeu" data-id="${o.id}">Respondeu</button>
+        <button class="btn btn-ok btn-sm" data-action="fu-concluir" data-id="${o.id}">Concluir</button>
+        <button class="btn btn-ghost btn-sm" data-action="fu-msg" data-id="${o.id}">Mensagem</button>
+        ${abrir}
+      </div>
+    </article>`;
+  }
+  if (i.tipo === 'pd') {
+    const d = db.demandas.find(x => x.id === o.demandaId);
+    return `<article class="item item-${bucket}">
+      <div class="item-topo">${nomeCliente(c, '')}<span class="tag tag-hoje">Dar retorno ao cliente</span></div>
+      <div class="item-titulo">${esc(d ? d.titulo : o.titulo)}</div>
+      <div class="item-meta">${d ? `<span>${esc(d.area)} · ${tagStatusDm(d.status)}</span>` : ''}<span>criada ${relDias(o.data)}</span></div>
+      ${d && d.retorno ? `<div class="pequeno"><strong>Retorno:</strong> ${esc(d.retorno)}</div>` : ''}
+      <div class="item-acoes">
+        <button class="btn btn-cta btn-sm" data-action="pd-feito" data-id="${o.id}">Retorno dado</button>
+        ${d ? `<button class="btn btn-ghost btn-sm" data-action="dm-msg" data-id="${d.id}">Mensagem</button>` : ''}
+        ${abrir}
+      </div>
+    </article>`;
+  }
+  // Demanda com prazo
+  return `<article class="item item-${bucket}">
+    <div class="item-topo">${nomeCliente(c, '')}<span class="tag">Demanda · ${esc(o.area)}</span></div>
+    <div class="item-titulo">${esc(o.titulo)}</div>
+    <div class="item-meta"><span class="tprio tprio-${esc(o.prioridade)}">${esc(o.prioridade)}</span>${tagStatusDm(o.status)}<span>${esc(o.pessoa || 'sem responsável')}</span><span>prazo ${fmtData(o.prazo)}</span></div>
+    <div class="item-acoes">
+      <button class="btn btn-sec btn-sm" data-action="dm-editar" data-id="${o.id}">Atualizar</button>
+      <button class="btn btn-ok btn-sm" data-action="dm-concluir" data-id="${o.id}">Concluir</button>
+      ${abrir}
+    </div>
+  </article>`;
+}
+
+/* ---------------------------- Tela CLIENTES ---------------------------- */
+function telaClientes() {
+  const f = ui.cliFiltro;
+  return `
+    <div class="cab-pagina">
+      <div><h1>Clientes</h1><p>${plural(db.clientes.length, 'cliente na carteira', 'clientes na carteira')}</p></div>
+      <span class="flex1"></span>
+      <button class="btn btn-cta" data-action="novo" data-tipo="cliente">+ Novo cliente</button>
+    </div>
+    <div class="filtros">
+      <input type="search" id="cli-busca" placeholder="Buscar por nome, CNPJ ou segmento…" value="${esc(f.q)}">
+      <select data-change="cli-filtro" data-campo="status"><option value="">Todos os status</option>${opcoes(STATUS_CLIENTE, f.status)}</select>
+      <select data-change="cli-filtro" data-campo="saude"><option value="">Toda saúde</option>${opcoes(Object.entries(SAUDE_ROTULO), f.saude)}</select>
+      <select data-change="cli-filtro" data-campo="resp"><option value="">Todos os responsáveis</option>${opcoes(db.config.responsaveis, f.resp)}</select>
+    </div>
+    <div id="lista-clientes"></div>`;
+}
+
+function atualizarListaClientes() {
+  const f = ui.cliFiltro; const q = norm(f.q);
+  const lista = db.clientes.filter(c =>
+    (!q || norm(`${c.nome} ${c.cnpj} ${c.segmento}`).includes(q)) &&
+    (!f.status || c.status === f.status) &&
+    (!f.saude || saudeEfetiva(c) === f.saude) &&
+    (!f.resp || c.responsavel === f.resp)
+  ).sort((a, b) => a.nome.localeCompare(b.nome));
+  const alvo = $('#lista-clientes'); if (!alvo) return;
+  if (!lista.length) { alvo.innerHTML = '<div class="vazio">Nenhum cliente encontrado.</div>'; return; }
+  alvo.innerHTML = `<div class="grade-clientes">${lista.map(c => {
+    const dsc = diasSemContato(c.id); const p = pendenciasCliente(c.id);
+    const semContato = c.status !== 'Encerrado' && dsc !== null && dsc > db.config.limiteSemContato;
+    return `<article class="card card-cliente ${semContato ? 'sem-contato' : ''}" data-action="cl-abrir" data-id="${c.id}" tabindex="0">
+      <div class="linha">${avatar(c)}<div class="flex1"><div class="nome">${esc(c.nome)}</div><div class="suave pequeno">${esc(c.segmento || '—')}</div></div>${saudeBadge(saudeEfetiva(c))}</div>
+      <div class="linha">${tagStatusCliente(c.status)}<span class="suave pequeno">${esc(c.responsavel || 'sem responsável')}</span></div>
+      <div class="${semContato ? '' : 'suave'} pequeno">${semContato ? '<strong style="color:var(--st-atrasado)">⚠ ' : ''}Último contato: ${dsc === null ? '—' : dsc === 0 ? 'hoje' : `há ${plural(dsc, 'dia', 'dias')}`}${semContato ? '</strong>' : ''}</div>
+      <div class="pendencias">
+        ${p.fus ? `<span class="tag tag-hoje">${plural(p.fus, 'follow-up', 'follow-ups')}</span>` : ''}
+        ${p.dms ? `<span class="tag tag-proximo">${plural(p.dms, 'demanda', 'demandas')}</span>` : ''}
+        ${p.rets ? `<span class="tag tag-atrasado">${plural(p.rets, 'retorno pendente', 'retornos pendentes')}</span>` : ''}
+        ${!p.fus && !p.dms && !p.rets ? '<span class="tag tag-ok">sem pendências</span>' : ''}
+      </div>
+    </article>`;
+  }).join('')}</div>`;
+}
+
+/* ---------------------------- FICHA DO CLIENTE ---------------------------- */
+function telaCliente(id, aba = 'timeline') {
+  const c = cliente(id);
+  if (!c) return `<div class="vazio">Cliente não encontrado. <a href="#/clientes">Voltar para a lista</a></div>`;
+  aba = aba || 'timeline';
+  const auto = saudeAuto(c.id); const efet = saudeEfetiva(c);
+  const fus = doCliente('followups', id), dms = doCliente('demandas', id), pjs = doCliente('projetos', id), cts = doCliente('contatos', id);
+  const tl = doCliente('timeline', id).sort((a, b) => b.ts.localeCompare(a.ts));
+  const dsc = diasSemContato(id);
+  const abas = [['timeline', 'Linha do tempo', tl.length], ['followups', 'Follow-ups', fus.filter(fuAberto).length], ['demandas', 'Demandas', dms.filter(demandaAberta).length], ['projetos', 'Projetos', pjs.length], ['contatos', 'Contatos', cts.length]];
+
+  let conteudo = '';
+  if (aba === 'timeline') {
+    conteudo = `
+      <form class="nota-rapida" data-form="nota-rapida" data-id="${id}">
+        <textarea name="texto" placeholder="Nota rápida: o que aconteceu, o que foi combinado…" required></textarea>
+        <button class="btn btn-cta" type="submit">Registrar</button>
+      </form>
+      ${tl.length ? `<ul class="timeline">${tl.map(t => `<li class="t-${esc(t.tipo)}"><div class="quando">${fmtTs(t.ts)} · ${esc(rotuloTipo(t.tipo))}</div><div class="texto">${esc(t.texto)}</div></li>`).join('')}</ul>` : '<div class="vazio">Nenhum registro ainda.</div>'}`;
+  } else if (aba === 'followups') {
+    const ord = [...fus].sort((a, b) => (fuAberto(b) - fuAberto(a)) || (b.dataEnvio || '').localeCompare(a.dataEnvio || ''));
+    conteudo = `<div class="cab-pagina"><span class="flex1"></span><button class="btn btn-cta btn-sm" data-action="novo" data-tipo="followup">+ Follow-up</button></div>
+      ${ord.length ? `<div class="lista">${ord.map(f => linhaFollowup(f, false)).join('')}</div>` : '<div class="vazio">Nenhum follow-up.</div>'}`;
+  } else if (aba === 'demandas') {
+    const ord = [...dms].sort((a, b) => (demandaAberta(b) - demandaAberta(a)) || (a.prazo || '9').localeCompare(b.prazo || '9'));
+    conteudo = `<div class="cab-pagina"><span class="flex1"></span><button class="btn btn-cta btn-sm" data-action="novo" data-tipo="demanda">+ Demanda</button></div>
+      ${ord.length ? `<div class="lista">${ord.map(d => linhaDemanda(d, false)).join('')}</div>` : '<div class="vazio">Nenhuma demanda.</div>'}`;
+  } else if (aba === 'projetos') {
+    conteudo = `<div class="cab-pagina"><span class="flex1"></span><button class="btn btn-cta btn-sm" data-action="pj-novo" data-cliente="${id}">+ Projeto</button></div>
+      ${pjs.length ? pjs.map(cardProjeto).join('') : '<div class="vazio">Nenhum projeto cadastrado.</div>'}`;
+  } else if (aba === 'contatos') {
+    conteudo = `<div class="cab-pagina"><span class="flex1"></span><button class="btn btn-cta btn-sm" data-action="ct-novo" data-cliente="${id}">+ Contato</button></div>
+      ${cts.length ? `<div class="contatos-grade">${cts.map(ct => `
+        <div class="card contato">
+          <div class="nome">${esc(ct.nome)} ${ct.principal ? '<span class="tag tag-marca">Principal</span>' : ''}</div>
+          <div class="suave">${esc(ct.cargo || '—')}</div>
+          ${ct.email ? `<a href="mailto:${esc(ct.email)}">${esc(ct.email)}</a>` : ''}
+          ${ct.telefone ? `<a href="https://wa.me/${esc(ct.telefone.replace(/\D/g, ''))}" target="_blank" rel="noopener">${esc(ct.telefone)}</a>` : ''}
+          <div class="grupo-botoes" style="margin-top:8px"><button class="btn btn-sec btn-sm" data-action="ct-editar" data-id="${ct.id}">Editar</button><button class="btn btn-ghost btn-sm" data-action="ct-excluir" data-id="${ct.id}">Excluir</button></div>
+        </div>`).join('')}</div>` : '<div class="vazio">Nenhum contato cadastrado.</div>'}`;
+  }
+
+  return `
+    <div class="pequeno" style="margin-bottom:10px"><a href="#/clientes">← Clientes</a></div>
+    <section class="card">
+      <div class="ficha-cab">
+        ${avatar(c, 'lg')}
+        <div class="info">
+          <h1>${esc(c.nome)}</h1>
+          <div class="meta">
+            ${tagStatusCliente(c.status)}
+            ${saudeBadge(efet)}${c.saude && c.saude !== 'auto' ? '<span class="pequeno">(manual)</span>' : '<span class="pequeno">(automática)</span>'}
+            ${c.segmento ? `<span>${esc(c.segmento)}</span>` : ''}
+            ${c.cnpj ? `<span>CNPJ ${esc(c.cnpj)}</span>` : ''}
+            <span>Operacional: <strong>${esc(c.responsavel || '—')}</strong></span>
+            <span>Desde ${fmtData(c.dataInicio)}</span>
+            <span>Último contato: ${dsc === null ? '—' : dsc === 0 ? 'hoje' : `há ${plural(dsc, 'dia', 'dias')}`}</span>
+            ${c.pipefyUrl ? `<a href="${esc(c.pipefyUrl)}" target="_blank" rel="noopener">Abrir no Pipefy ↗</a>` : ''}
+          </div>
+          ${auto.cor !== efet ? `<div class="sugestao">Sugestão automática: ${saudeBadge(auto.cor)} ${auto.motivos.length ? '— ' + esc(auto.motivos.join(', ')) : ''} <button class="btn btn-ghost btn-sm" data-action="cl-saude-auto" data-id="${c.id}">Usar automática</button></div>`
+            : auto.motivos.length ? `<div class="sugestao">Motivo da saúde: ${esc(auto.motivos.join(', '))}</div>` : ''}
+        </div>
+        <div class="grupo-botoes">
+          <button class="btn btn-sec btn-sm" data-action="cl-editar" data-id="${c.id}">Editar cliente</button>
+          <button class="btn btn-ghost btn-sm" data-action="cl-excluir" data-id="${c.id}">Excluir</button>
+        </div>
+      </div>
+      <div class="observacoes"><strong>Lembrar sempre</strong>${c.observacoes ? esc(c.observacoes) : '<span class="suave">Sem observações fixas. Clique em "Editar cliente" para adicionar.</span>'}</div>
+    </section>
+    <nav class="abas">${abas.map(([k, r, n]) => `<a href="#/cliente/${id}/${k}" class="${aba === k ? 'ativo' : ''}">${r}${n ? `<span class="n">${n}</span>` : ''}</a>`).join('')}</nav>
+    ${conteudo}`;
+}
+
+function rotuloTipo(t) {
+  return { nota: 'Nota', followup: 'Follow-up', demanda: 'Demanda', alerta: 'Alerta', projeto: 'Projeto', cliente: 'Cliente', contato: 'Contato' }[t] || t;
+}
+
+function linhaFollowup(f, mostrarCliente = true) {
+  const c = cliente(f.clienteId); const ct = contato(f.contatoId);
+  const aberto = fuAberto(f); const t = hoje();
+  const venc = aberto && f.proximaCobranca ? (f.proximaCobranca < t ? 'tag-atrasado' : f.proximaCobranca === t ? 'tag-hoje' : '') : '';
+  return `<div class="linha-item ${f.status === FU.ESCALAR ? 'destaque-escalar' : ''}">
+    <div class="corpo">
+      ${mostrarCliente ? `<div style="margin-bottom:4px">${nomeCliente(c)}</div>` : ''}
+      <div class="item-titulo">${esc(f.assunto)}</div>
+      <div class="item-meta">${tagStatusFu(f.status)}<span>${esc(f.canal)}${ct ? ' · ' + esc(ct.nome) : ''}</span><span>enviado ${fmtData(f.dataEnvio)}</span><span>${f.tentativas}ª tentativa</span>
+      ${aberto && f.proximaCobranca ? `<span class="tag ${venc}">cobrar ${fmtData(f.proximaCobranca)}</span>` : ''}</div>
+      ${f.mensagem ? `<div class="pequeno suave" style="margin-top:4px;white-space:pre-wrap">${esc(f.mensagem)}</div>` : ''}
+    </div>
+    <div class="grupo-botoes">
+      ${aberto ? `<button class="btn btn-cta btn-sm" data-action="fu-cobrei" data-id="${f.id}">Cobrei de novo</button>
+      <button class="btn btn-sec btn-sm" data-action="fu-respondeu" data-id="${f.id}">Respondeu</button>` : ''}
+      ${f.status !== FU.CONCLUIDO ? `<button class="btn btn-ok btn-sm" data-action="fu-concluir" data-id="${f.id}">Concluir</button>` : ''}
+      <button class="btn btn-ghost btn-sm" data-action="fu-msg" data-id="${f.id}">Mensagem</button>
+      <button class="btn btn-ghost btn-sm" data-action="fu-editar" data-id="${f.id}">Editar</button>
+    </div>
+  </div>`;
+}
+
+function linhaDemanda(d, mostrarCliente = true) {
+  const c = cliente(d.clienteId);
+  return `<div class="linha-item">
+    <div class="corpo">
+      ${mostrarCliente ? `<div style="margin-bottom:4px">${nomeCliente(c)}</div>` : ''}
+      <div class="item-titulo">${esc(d.titulo)}</div>
+      <div class="item-meta"><span class="tprio tprio-${esc(d.prioridade)}">${esc(d.prioridade)}</span><span class="tag">${esc(d.area)}</span><span>${esc(d.pessoa || 'sem responsável')}</span>${tagPrazo(d.prazo, demandaAberta(d))}</div>
+      ${d.retorno ? `<div class="pequeno" style="margin-top:4px"><strong>Retorno ao cliente:</strong> ${esc(d.retorno)}</div>` : ''}
+    </div>
+    <div class="grupo-botoes">
+      <select data-change="dm-status" data-id="${d.id}" aria-label="Status da demanda" style="width:auto">${opcoes(STATUS_DEMANDA, d.status)}</select>
+      <button class="btn btn-ghost btn-sm" data-action="dm-msg" data-id="${d.id}">Mensagem</button>
+      <button class="btn btn-ghost btn-sm" data-action="dm-editar" data-id="${d.id}">Editar</button>
+    </div>
+  </div>`;
+}
+
+function percentualProjeto(p) {
+  if (!p.etapas || !p.etapas.length) return 0;
+  return Math.round(p.etapas.filter(e => e.feito).length / p.etapas.length * 100);
+}
+function cardProjeto(p) {
+  const pct = percentualProjeto(p); const t = hoje();
+  return `<section class="card projeto">
+    <div class="cab-pagina" style="margin:0">
+      <div><h3>${esc(p.nome)}</h3><div class="item-meta"><span class="tag ${p.status === 'Concluído' ? 'tag-ok' : 'tag-proximo'}">${esc(p.status)}</span><span>${pct}% concluído</span></div></div>
+      <span class="flex1"></span>
+      <button class="btn btn-sec btn-sm" data-action="pj-editar" data-id="${p.id}">Editar</button>
+    </div>
+    <div class="barra"><span style="width:${pct}%"></span></div>
+    <ul class="etapas">${(p.etapas || []).map(e => `
+      <li class="${e.feito ? 'feito' : ''}"><label>
+        <input type="checkbox" data-change="pj-etapa" data-id="${p.id}" data-etapa="${e.id}" ${e.feito ? 'checked' : ''}>
+        <span class="nome-etapa flex1">${esc(e.nome)}</span>
+        ${e.data ? `<span class="tag ${!e.feito && e.data < t ? 'tag-atrasado' : ''}">${fmtData(e.data)}</span>` : ''}
+      </label></li>`).join('') || '<li class="suave">Nenhuma etapa.</li>'}</ul>
+  </section>`;
+}
+
+/* ---------------------------- DEMANDAS (Kanban / lista) ---------------------------- */
+function telaDemandas() {
+  const f = ui.dmFiltro;
+  const lista = db.demandas.filter(d => (!f.area || d.area === f.area) && (!f.cliente || d.clienteId === f.cliente));
+  const ordPrio = (a, b) => PRIORIDADES.indexOf(b.prioridade) - PRIORIDADES.indexOf(a.prioridade) || (a.prazo || '9').localeCompare(b.prazo || '9');
+  const clientesOrd = [...db.clientes].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => [c.id, c.nome]);
+
+  let corpo;
+  if (ui.dmVisao === 'kanban') {
+    corpo = `<div class="kanban">${STATUS_DEMANDA.map(s => {
+      const col = lista.filter(d => d.status === s).sort(ordPrio);
+      return `<div class="kcol" data-status="${esc(s)}">
+        <div class="kcol-cab"><span>${esc(s)}</span><span class="qtd">${col.length}</span></div>
+        <div class="kcards">${col.map(cardKanban).join('')}</div>
+      </div>`;
+    }).join('')}</div>`;
+  } else {
+    const ord = [...lista].sort((a, b) => (demandaAberta(b) - demandaAberta(a)) || ordPrio(a, b));
+    corpo = ord.length ? `<div class="lista">${ord.map(d => linhaDemanda(d, true)).join('')}</div>` : '<div class="vazio">Nenhuma demanda encontrada.</div>';
+  }
+
+  return `
+    <div class="cab-pagina">
+      <div><h1>Demandas / Handoffs</h1><p>Arraste os cartões entre as colunas para mudar o status.</p></div>
+      <span class="flex1"></span>
+      <div class="alternador"><button data-action="dm-visao" data-v="kanban" class="${ui.dmVisao === 'kanban' ? 'ativo' : ''}">Kanban</button><button data-action="dm-visao" data-v="lista" class="${ui.dmVisao === 'lista' ? 'ativo' : ''}">Lista</button></div>
+      <button class="btn btn-cta" data-action="novo" data-tipo="demanda">+ Nova demanda</button>
+    </div>
+    <div class="filtros">
+      <select data-change="dm-filtro" data-campo="area"><option value="">Todas as áreas</option>${opcoes(db.config.areas, f.area)}</select>
+      <select data-change="dm-filtro" data-campo="cliente"><option value="">Todos os clientes</option>${opcoes(clientesOrd, f.cliente)}</select>
+      ${f.area || f.cliente ? '<button class="btn btn-ghost btn-sm" data-action="dm-limpar-filtro">Limpar filtros</button>' : ''}
+    </div>
+    ${corpo}`;
+}
+
+function cardKanban(d) {
+  const c = cliente(d.clienteId);
+  return `<article class="kcard prio-${esc(d.prioridade)}" draggable="true" data-id="${d.id}">
+    ${nomeCliente(c)}
+    <div class="kcard-titulo">${esc(d.titulo)}</div>
+    <div class="kcard-meta"><span class="tag">${esc(d.area)}</span><span class="tprio tprio-${esc(d.prioridade)}">${esc(d.prioridade)}</span></div>
+    <div class="kcard-meta"><span>${esc(d.pessoa || 'sem responsável')}</span>${tagPrazo(d.prazo, demandaAberta(d))}</div>
+    <div class="kcard-meta">
+      <select data-change="dm-status" data-id="${d.id}" aria-label="Mover para" style="flex:1">${opcoes(STATUS_DEMANDA, d.status)}</select>
+      <button class="btn btn-ghost btn-sm" data-action="dm-editar" data-id="${d.id}">Editar</button>
+    </div>
+  </article>`;
+}
+
+/* ---------------------------- FOLLOW-UPS ---------------------------- */
+function telaFollowups() {
+  const f = ui.fuFiltro;
+  const base = db.followups.filter(x => !f.cliente || x.clienteId === f.cliente);
+  const lista = base.filter(x => !f.status || x.status === f.status)
+    .sort((a, b) => (b.status === FU.ESCALAR) - (a.status === FU.ESCALAR) || (fuAberto(b) - fuAberto(a)) || (a.proximaCobranca || '9').localeCompare(b.proximaCobranca || '9'));
+  const cont = s => base.filter(x => x.status === s).length;
+  const t = hoje();
+  const clientesOrd = [...db.clientes].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => [c.id, c.nome]);
+  return `
+    <div class="cab-pagina">
+      <div><h1>Follow-ups</h1><p>Tudo o que você enviou e está esperando resposta.</p></div>
+      <span class="flex1"></span>
+      <button class="btn btn-cta" data-action="novo" data-tipo="followup">+ Novo follow-up</button>
+    </div>
+    <div class="filtros">
+      <div class="chips">
+        <button class="chip ${!f.status ? 'ativo' : ''}" data-action="fu-filtro" data-status="">Todos<span class="n">${base.length}</span></button>
+        ${STATUS_FU.map(s => `<button class="chip ${f.status === s ? 'ativo' : ''}" data-action="fu-filtro" data-status="${esc(s)}" ${s === FU.ESCALAR && cont(s) ? 'style="border-color:#F3C3BF;color:var(--st-atrasado)"' : ''}>${esc(s)}<span class="n">${cont(s)}</span></button>`).join('')}
+      </div>
+      <select data-change="fu-filtro-cliente"><option value="">Todos os clientes</option>${opcoes(clientesOrd, f.cliente)}</select>
+    </div>
+    ${lista.length ? `<div class="tabela-wrap"><table>
+      <thead><tr><th>Cliente</th><th>Assunto</th><th>Status</th><th>Enviado</th><th>Tent.</th><th>Próx. cobrança</th><th></th></tr></thead>
+      <tbody>${lista.map(x => {
+        const c = cliente(x.clienteId); const ct = contato(x.contatoId); const aberto = fuAberto(x);
+        const venc = aberto && x.proximaCobranca ? (x.proximaCobranca < t ? 'tag-atrasado' : x.proximaCobranca === t ? 'tag-hoje' : '') : '';
+        return `<tr class="${x.status === FU.ESCALAR ? 'escalar' : ''}">
+          <td>${nomeCliente(c)}</td>
+          <td><strong>${esc(x.assunto)}</strong><div class="pequeno suave">${esc(x.canal)}${ct ? ' · ' + esc(ct.nome) : ''}</div></td>
+          <td>${tagStatusFu(x.status)}</td>
+          <td style="white-space:nowrap">${fmtData(x.dataEnvio)}<div class="pequeno suave">${relDias(x.dataEnvio)}</div></td>
+          <td>${x.tentativas}</td>
+          <td>${aberto && x.proximaCobranca ? `<span class="tag ${venc}">${fmtData(x.proximaCobranca)}</span>` : '<span class="suave">—</span>'}</td>
+          <td><div class="grupo-botoes" style="justify-content:flex-end">
+            ${aberto ? `<button class="btn btn-cta btn-sm" data-action="fu-cobrei" data-id="${x.id}">Cobrei</button><button class="btn btn-sec btn-sm" data-action="fu-respondeu" data-id="${x.id}">Respondeu</button>` : ''}
+            <button class="btn btn-ghost btn-sm" data-action="fu-editar" data-id="${x.id}">Editar</button>
+          </div></td>
+        </tr>`;
+      }).join('')}</tbody></table></div>` : '<div class="vazio">Nenhum follow-up com este filtro.</div>'}`;
+}
+
+/* ---------------------------- MODELOS DE MENSAGEM ---------------------------- */
+/** Monta as variáveis {cliente}, {contato}, {assunto}, {data}, {retorno} a partir de um follow-up ou demanda. */
+function contextoMensagem(ref) {
+  const vazio = { cliente: '{cliente}', contato: '{contato}', assunto: '{assunto}', data: fmtData(hoje()), retorno: '{retorno}' };
+  if (!ref) return vazio;
+  const [tipo, id] = ref.split(':');
+  if (tipo === 'fu') {
+    const f = db.followups.find(x => x.id === id); if (!f) return vazio;
+    const c = cliente(f.clienteId); const ct = contato(f.contatoId) || contatoPrincipal(f.clienteId);
+    return { cliente: c?.nome || '', contato: ct ? ct.nome.split(' ')[0] : '', assunto: f.assunto, data: fmtData(f.dataEnvio), retorno: '{retorno}' };
+  }
+  const d = db.demandas.find(x => x.id === id); if (!d) return vazio;
+  const c = cliente(d.clienteId); const ct = contatoPrincipal(d.clienteId);
+  return { cliente: c?.nome || '', contato: ct ? ct.nome.split(' ')[0] : '', assunto: d.titulo, data: fmtData(d.prazo || hoje()), retorno: d.retorno || '{retorno}' };
+}
+function preencher(texto, ctx) { return texto.replace(/\{(cliente|contato|assunto|data|retorno)\}/g, (_, k) => ctx[k] ?? ''); }
+
+function opcoesContexto() {
+  const fus = db.followups.filter(f => f.status !== FU.CONCLUIDO).map(f => [`fu:${f.id}`, `Follow-up · ${cliente(f.clienteId)?.nome || '?'} — ${f.assunto}`]);
+  const dms = db.demandas.filter(demandaAberta).map(d => [`dm:${d.id}`, `Demanda · ${cliente(d.clienteId)?.nome || '?'} — ${d.titulo}`]);
+  return [...fus, ...dms];
+}
+
+function telaModelos() {
+  const ctx = contextoMensagem(ui.modeloCtx);
+  return `
+    <div class="cab-pagina">
+      <div><h1>Modelos de mensagem</h1><p>Variáveis disponíveis: <code>{cliente}</code> <code>{contato}</code> <code>{assunto}</code> <code>{data}</code> <code>{retorno}</code></p></div>
+      <span class="flex1"></span>
+      <button class="btn btn-cta" data-action="md-novo">+ Novo modelo</button>
+    </div>
+    <div class="campo" style="max-width:640px">
+      <label for="md-ctx">Preencher variáveis a partir de:</label>
+      <select id="md-ctx" data-change="md-ctx"><option value="">— escolha um follow-up ou demanda —</option>${opcoes(opcoesContexto(), ui.modeloCtx)}</select>
+    </div>
+    <div class="itens">${db.modelos.map(m => `
+      <article class="card">
+        <div class="cab-pagina" style="margin-bottom:8px"><h3>${esc(m.nome)}</h3><span class="flex1"></span>
+          <button class="btn btn-ghost btn-sm" data-action="md-editar" data-id="${m.id}">Editar</button>
+          <button class="btn btn-ghost btn-sm" data-action="md-excluir" data-id="${m.id}">Excluir</button></div>
+        <div style="white-space:pre-wrap;background:var(--superficie-2);padding:12px;border-radius:var(--raio-sm);margin-bottom:10px">${esc(preencher(m.texto, ctx))}</div>
+        <button class="btn btn-cta btn-sm" data-action="md-copiar" data-id="${m.id}">Copiar</button>
+      </article>`).join('') || '<div class="vazio">Nenhum modelo.</div>'}</div>`;
+}
+
+/** Painel com todos os modelos já preenchidos para um follow-up/demanda. */
+function abrirMensagens(ref) {
+  const ctx = contextoMensagem(ref);
+  abrirDrawer({
+    titulo: `Mensagem para ${ctx.cliente}`,
+    corpo: `<p class="suave" style="margin-top:0">Assunto: <strong>${esc(ctx.assunto)}</strong>. Edite se quiser e clique em Copiar.</p>
+      ${db.modelos.map(m => `<div class="campo msg-modelo"><label>${esc(m.nome)}</label><textarea data-modelo="${m.id}">${esc(preencher(m.texto, ctx))}</textarea>
+        <div><button type="button" class="btn btn-cta btn-sm" data-action="msg-copiar" data-id="${m.id}">Copiar</button></div></div>`).join('')}`
+  });
+}
+
+/* ---------------------------- CONFIGURAÇÕES ---------------------------- */
+function telaConfig() {
+  const cfg = db.config;
+  const temExemplo = ['clientes', 'followups', 'demandas'].some(k => db[k].some(x => x.exemplo));
+  return `
+    <div class="cab-pagina"><div><h1>Configurações</h1><p>Os dados ficam salvos apenas neste navegador. Faça backup com frequência.</p></div></div>
+    <div class="itens" style="grid-template-columns:repeat(auto-fill,minmax(360px,1fr))">
+      <form class="card" data-form="config">
+        <h2 style="margin-bottom:14px">Regras</h2>
+        <div class="campo"><span class="rotulo">Cadência de follow-up (dias úteis até a próxima cobrança)</span>
+          <div class="tres">
+            <div class="campo"><label for="cad1">1ª tentativa</label><input id="cad1" type="number" min="1" max="30" name="cad1" value="${cfg.cadencia[0]}" required></div>
+            <div class="campo"><label for="cad2">2ª tentativa</label><input id="cad2" type="number" min="1" max="30" name="cad2" value="${cfg.cadencia[1]}" required></div>
+            <div class="campo"><label for="cad3">3ª tentativa</label><input id="cad3" type="number" min="1" max="30" name="cad3" value="${cfg.cadencia[2]}" required></div>
+          </div>
+          <span class="ajuda">Sábados e domingos são pulados. Após 3 tentativas sem resposta, o follow-up é escalonado.</span>
+        </div>
+        <div class="campo"><label for="lim">Destacar clientes sem contato há mais de (dias)</label><input id="lim" type="number" min="1" max="365" name="limite" value="${cfg.limiteSemContato}" required></div>
+        <div class="campo"><label for="resps">Responsáveis (um por linha)</label><textarea id="resps" name="responsaveis">${esc(cfg.responsaveis.join('\n'))}</textarea></div>
+        <div class="campo"><label for="areas">Áreas de handoff (uma por linha)</label><textarea id="areas" name="areas">${esc(cfg.areas.join('\n'))}</textarea>
+          <span class="ajuda">Demandas da área "${AREA_INTERNA}" não geram a pendência "Dar retorno ao cliente".</span></div>
+        <button class="btn btn-cta" type="submit">Salvar configurações</button>
+      </form>
+      <div class="card">
+        <h2 style="margin-bottom:14px">Backup</h2>
+        <p class="suave">Exporte um arquivo JSON com todos os dados. Para restaurar (ou levar para outro computador), importe esse arquivo.</p>
+        <div class="grupo-botoes" style="margin-bottom:24px">
+          <button class="btn btn-cta" data-action="cfg-exportar">Exportar backup (JSON)</button>
+          <button class="btn btn-sec" data-action="cfg-importar">Importar backup</button>
+        </div>
+        <h2 style="margin-bottom:14px">Dados</h2>
+        <div class="grupo-botoes">
+          ${temExemplo ? '<button class="btn btn-sec" data-action="cfg-apagar-exemplo">Apagar dados de exemplo</button>' : ''}
+          <button class="btn btn-perigo" data-action="cfg-limpar">Limpar todos os dados</button>
+        </div>
+        <p class="suave pequeno" style="margin-top:16px">${plural(db.clientes.length, 'cliente', 'clientes')} · ${plural(db.followups.length, 'follow-up', 'follow-ups')} · ${plural(db.demandas.length, 'demanda', 'demandas')} · ${plural(db.timeline.length, 'registro', 'registros')} na linha do tempo</p>
+      </div>
+    </div>`;
+}
+
+/* =====================================================================
+   PAINEL LATERAL (formulários)
+   ===================================================================== */
+function abrirDrawer({ titulo, corpo, aoSalvar, aoMontar, textoSalvar = 'Salvar', rodapeExtra = '' }) {
+  const d = $('#drawer');
+  d.innerHTML = `<form class="drawer-form">
+    <header class="drawer-topo"><h2>${esc(titulo)}</h2><button type="button" class="btn-icone" data-action="drawer-fechar" aria-label="Fechar">×</button></header>
+    <div class="drawer-corpo">${corpo}</div>
+    <footer class="drawer-rodape">${rodapeExtra}<span class="flex1"></span>
+      <button type="button" class="btn btn-ghost" data-action="drawer-fechar">${aoSalvar ? 'Cancelar' : 'Fechar'}</button>
+      ${aoSalvar ? `<button type="submit" class="btn btn-cta">${textoSalvar}</button>` : ''}
+    </footer></form>`;
+  const form = $('form', d);
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!aoSalvar) return;
+    const dados = Object.fromEntries(new FormData(form));
+    if (aoSalvar(dados, form) !== false) { fecharDrawer(); persistir(); }
+  });
+  fecharMenuNovo();
+  document.body.classList.add('drawer-aberto');
+  if (aoMontar) aoMontar(form);
+  setTimeout(() => { const el = form.querySelector('.drawer-corpo input:not([type=hidden]):not([type=checkbox]), .drawer-corpo textarea, .drawer-corpo select'); el && el.focus(); }, 60);
+}
+function fecharDrawer() { document.body.classList.remove('drawer-aberto'); }
+
+function campoCliente(clienteId, obrigatorio = true) {
+  const c = cliente(clienteId);
+  return `<div class="campo"><label for="f-cliente">Cliente</label>
+    <input type="text" id="f-cliente" name="cliente" list="dl-clientes" value="${esc(c ? c.nome : '')}" placeholder="Digite para buscar…" autocomplete="off" ${obrigatorio ? 'required' : ''}></div>`;
+}
+function clienteDoForm(dados) {
+  const c = resolverCliente(dados.cliente);
+  if (!c) { toast('Escolha um cliente existente da lista.', 'erro'); return null; }
+  return c;
+}
+
+/* ---------- Cliente ---------- */
+function formCliente(c) {
+  const novo = !c; c = c || { status: 'Onboarding', saude: 'auto', dataInicio: hoje() };
+  const auto = novo ? { cor: 'verde' } : saudeAuto(c.id);
+  abrirDrawer({
+    titulo: novo ? 'Novo cliente' : `Editar ${c.nome}`,
+    corpo: `
+      <div class="campo"><label for="c-nome">Nome da empresa</label><input id="c-nome" type="text" name="nome" value="${esc(c.nome)}" required></div>
+      <div class="duas">
+        <div class="campo"><label for="c-cnpj">CNPJ (opcional)</label><input id="c-cnpj" type="text" name="cnpj" value="${esc(c.cnpj)}" placeholder="00.000.000/0000-00"></div>
+        <div class="campo"><label for="c-seg">Segmento</label><input id="c-seg" type="text" name="segmento" value="${esc(c.segmento)}"></div>
+      </div>
+      <div class="duas">
+        <div class="campo"><label for="c-status">Status</label><select id="c-status" name="status">${opcoes(STATUS_CLIENTE, c.status)}</select></div>
+        <div class="campo"><label for="c-saude">Saúde</label><select id="c-saude" name="saude">${opcoes([['auto', `Automática (sugestão: ${SAUDE_ROTULO[auto.cor]})`], ['verde', 'Verde'], ['amarelo', 'Amarelo'], ['vermelho', 'Vermelho']], c.saude || 'auto')}</select></div>
+      </div>
+      <div class="duas">
+        <div class="campo"><label for="c-resp">Responsável operacional</label><input id="c-resp" type="text" name="responsavel" list="dl-responsaveis" value="${esc(c.responsavel)}"></div>
+        <div class="campo"><label for="c-ini">Data de início</label><input id="c-ini" type="date" name="dataInicio" value="${esc(c.dataInicio)}"></div>
+      </div>
+      <div class="campo"><label for="c-pipe">Link do pipe/organização no Pipefy</label><input id="c-pipe" type="url" name="pipefyUrl" value="${esc(c.pipefyUrl)}" placeholder="https://app.pipefy.com/…"></div>
+      <div class="campo"><label for="c-obs">Observações fixas</label><textarea id="c-obs" name="observacoes" placeholder="O que eu preciso lembrar sempre sobre este cliente">${esc(c.observacoes)}</textarea></div>`,
+    aoSalvar: d => {
+      const nome = d.nome.trim();
+      if (db.clientes.some(x => x.id !== c.id && norm(x.nome) === norm(nome))) { toast('Já existe um cliente com esse nome.', 'erro'); return false; }
+      if (novo) {
+        const n = { id: uid(), criadoEm: new Date().toISOString(), ...d, nome };
+        db.clientes.push(n);
+        registrar(n.id, 'cliente', `Cliente cadastrado (${n.status}).`);
+        toast('Cliente criado');
+        setTimeout(() => { location.hash = `#/cliente/${n.id}/contatos`; }, 0);
+      } else {
+        if (c.status !== d.status) registrar(c.id, 'cliente', `Status do cliente: ${c.status} → ${d.status}.`);
+        if ((c.saude || 'auto') !== d.saude) registrar(c.id, 'cliente', `Saúde definida como ${d.saude === 'auto' ? 'automática' : SAUDE_ROTULO[d.saude] + ' (manual)'}.`);
+        if ((c.observacoes || '') !== d.observacoes) registrar(c.id, 'cliente', 'Observações fixas atualizadas.');
+        Object.assign(c, d, { nome });
+        toast('Cliente atualizado');
+      }
+    }
+  });
+}
+
+/* ---------- Contato ---------- */
+function formContato(clienteId, ct) {
+  const novo = !ct; ct = ct || {};
+  abrirDrawer({
+    titulo: novo ? 'Novo contato' : 'Editar contato',
+    corpo: `
+      <div class="campo"><label for="ct-nome">Nome</label><input id="ct-nome" type="text" name="nome" value="${esc(ct.nome)}" required></div>
+      <div class="campo"><label for="ct-cargo">Cargo</label><input id="ct-cargo" type="text" name="cargo" value="${esc(ct.cargo)}"></div>
+      <div class="duas">
+        <div class="campo"><label for="ct-email">E-mail</label><input id="ct-email" type="email" name="email" value="${esc(ct.email)}"></div>
+        <div class="campo"><label for="ct-tel">Telefone / WhatsApp</label><input id="ct-tel" type="tel" name="telefone" value="${esc(ct.telefone)}" placeholder="+55 11 90000-0000"></div>
+      </div>
+      <label class="check"><input type="checkbox" name="principal" ${ct.principal || (novo && !doCliente('contatos', clienteId).length) ? 'checked' : ''}> Contato principal</label>`,
+    aoSalvar: d => {
+      const principal = !!d.principal;
+      if (principal) db.contatos.filter(x => x.clienteId === clienteId).forEach(x => { x.principal = false; });
+      if (novo) {
+        db.contatos.push({ id: uid(), clienteId, ...d, principal });
+        registrar(clienteId, 'contato', `Contato adicionado: ${d.nome}${d.cargo ? ' (' + d.cargo + ')' : ''}.`);
+      } else Object.assign(ct, d, { principal });
+      toast('Contato salvo');
+    }
+  });
+}
+
+/* ---------- Follow-up ---------- */
+function formFollowup(f, clienteIdPadrao) {
+  const novo = !f;
+  f = f || { clienteId: clienteIdPadrao, canal: 'E-mail', dataEnvio: hoje(), tentativas: 1, status: FU.AGUARDANDO };
+  const sugestao = f.proximaCobranca || sugerirProximaCobranca(f.ultimaCobranca || f.dataEnvio, f.tentativas);
+  abrirDrawer({
+    titulo: novo ? 'Novo follow-up' : 'Editar follow-up',
+    corpo: `
+      ${campoCliente(f.clienteId)}
+      <div class="duas">
+        <div class="campo"><label for="fu-ct">Contato</label><select id="fu-ct" name="contatoId"></select></div>
+        <div class="campo"><label for="fu-canal">Canal</label><select id="fu-canal" name="canal">${opcoes(CANAIS, f.canal)}</select></div>
+      </div>
+      <div class="campo"><label for="fu-ass">Assunto</label><input id="fu-ass" type="text" name="assunto" value="${esc(f.assunto)}" required></div>
+      <div class="campo"><label for="fu-msg">O que foi enviado / perguntado</label><textarea id="fu-msg" name="mensagem">${esc(f.mensagem)}</textarea></div>
+      <div class="tres">
+        <div class="campo"><label for="fu-envio">Data de envio</label><input id="fu-envio" type="date" name="dataEnvio" value="${esc(f.dataEnvio)}" required></div>
+        <div class="campo"><label for="fu-tent">Tentativas</label><input id="fu-tent" type="number" min="1" name="tentativas" value="${esc(f.tentativas)}" required></div>
+        <div class="campo"><label for="fu-prox">Próxima cobrança</label><input id="fu-prox" type="date" name="proximaCobranca" value="${esc(sugestao)}"></div>
+      </div>
+      <p class="ajuda suave pequeno" id="fu-dica" style="margin-top:-8px"></p>
+      <div class="campo"><label for="fu-status">Status</label><select id="fu-status" name="status">${opcoes(STATUS_FU, f.status)}</select></div>`,
+    rodapeExtra: novo ? '' : `<button type="button" class="btn btn-ghost" data-action="fu-excluir" data-id="${f.id}">Excluir</button>`,
+    aoMontar: form => {
+      const inpCli = $('#f-cliente', form), selCt = $('#fu-ct', form), envio = $('#fu-envio', form), tent = $('#fu-tent', form), prox = $('#fu-prox', form), dica = $('#fu-dica', form);
+      let tocado = !novo;
+      const carregarContatos = () => {
+        const c = resolverCliente(inpCli.value);
+        const cts = c ? doCliente('contatos', c.id) : [];
+        const sel = selCt.value || f.contatoId || contatoPrincipal(c?.id)?.id || '';
+        selCt.innerHTML = '<option value="">— sem contato —</option>' + opcoes(cts.map(x => [x.id, x.nome + (x.cargo ? ' · ' + x.cargo : '')]), sel);
+      };
+      const recalcular = () => {
+        const n = Number(tent.value) || 1;
+        dica.textContent = `Sugestão da cadência: +${cadenciaPara(n)} dias úteis (${n}ª tentativa) → ${fmtData(sugerirProximaCobranca(envio.value, n))}`;
+        if (!tocado && envio.value) prox.value = sugerirProximaCobranca(envio.value, n);
+      };
+      inpCli.addEventListener('input', () => { selCt.value = ''; carregarContatos(); });
+      envio.addEventListener('change', recalcular); tent.addEventListener('input', recalcular);
+      prox.addEventListener('change', () => { tocado = true; });
+      carregarContatos(); recalcular();
+    },
+    aoSalvar: d => {
+      const c = clienteDoForm(d); if (!c) return false;
+      const dados = { clienteId: c.id, contatoId: d.contatoId, canal: d.canal, assunto: d.assunto.trim(), mensagem: d.mensagem, dataEnvio: d.dataEnvio, tentativas: Math.max(1, Number(d.tentativas) || 1), proximaCobranca: d.proximaCobranca, status: d.status };
+      let alvo;
+      if (novo) {
+        alvo = { id: uid(), ...dados, criadoEm: new Date().toISOString() };
+        db.followups.push(alvo);
+        registrar(c.id, 'followup', `Follow-up enviado por ${dados.canal}: "${dados.assunto}". Próxima cobrança: ${fmtData(dados.proximaCobranca)}.`);
+      } else {
+        alvo = f;
+        if (f.clienteId !== dados.clienteId) registrar(dados.clienteId, 'followup', `Follow-up "${dados.assunto}" vinculado a este cliente.`);
+        if (f.status !== dados.status) registrar(dados.clienteId, 'followup', `Follow-up "${dados.assunto}": ${f.status} → ${dados.status}.`);
+        if (dados.status === FU.RESPONDIDO && f.status !== FU.RESPONDIDO) dados.dataResposta = hoje();
+        Object.assign(f, dados);
+      }
+      const escalou = aplicarEscalonamento(alvo) || (alvo.status === FU.ESCALAR && (novo || f.status !== FU.ESCALAR));
+      if (escalou) sugerirEmRisco(alvo.clienteId);
+      toast('Follow-up salvo');
+    }
+  });
+}
+
+/* ---------- Demanda ---------- */
+function formDemanda(dm, clienteIdPadrao) {
+  const novo = !dm;
+  dm = dm || { clienteId: clienteIdPadrao, area: 'Operacional', prioridade: 'Média', status: 'Nova' };
+  abrirDrawer({
+    titulo: novo ? 'Nova demanda / handoff' : 'Editar demanda',
+    corpo: `
+      ${campoCliente(dm.clienteId)}
+      <div class="campo"><label for="dm-tit">Título</label><input id="dm-tit" type="text" name="titulo" value="${esc(dm.titulo)}" required></div>
+      <div class="campo"><label for="dm-desc">Descrição (o que o cliente pediu)</label><textarea id="dm-desc" name="descricao">${esc(dm.descricao)}</textarea></div>
+      <div class="duas">
+        <div class="campo"><label for="dm-area">Área responsável</label><select id="dm-area" name="area">${opcoes(db.config.areas.includes(dm.area) ? db.config.areas : [...db.config.areas, dm.area], dm.area)}</select></div>
+        <div class="campo"><label for="dm-pessoa">Pessoa responsável</label><input id="dm-pessoa" type="text" name="pessoa" list="dl-responsaveis" value="${esc(dm.pessoa)}"></div>
+      </div>
+      <div class="tres">
+        <div class="campo"><label for="dm-prio">Prioridade</label><select id="dm-prio" name="prioridade">${opcoes(PRIORIDADES, dm.prioridade)}</select></div>
+        <div class="campo"><label for="dm-prazo">Prazo</label><input id="dm-prazo" type="date" name="prazo" value="${esc(dm.prazo)}"></div>
+        <div class="campo"><label for="dm-st">Status</label><select id="dm-st" name="status">${opcoes(STATUS_DEMANDA, dm.status)}</select></div>
+      </div>
+      <div class="campo"><label for="dm-ret">Retorno que preciso dar ao cliente</label><textarea id="dm-ret" name="retorno" placeholder="Ex.: enviar o boleto atualizado e confirmar a nova data de vencimento">${esc(dm.retorno)}</textarea></div>`,
+    rodapeExtra: novo ? '' : `<button type="button" class="btn btn-ghost" data-action="dm-excluir" data-id="${dm.id}">Excluir</button>`,
+    aoSalvar: d => {
+      const c = clienteDoForm(d); if (!c) return false;
+      const dados = { clienteId: c.id, titulo: d.titulo.trim(), descricao: d.descricao, area: d.area, pessoa: d.pessoa, prioridade: d.prioridade, prazo: d.prazo, retorno: d.retorno };
+      if (novo) {
+        const n = { id: uid(), ...dados, status: d.status, criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString() };
+        db.demandas.push(n);
+        registrar(c.id, 'demanda', `Demanda criada para ${n.area}${n.pessoa ? ' (' + n.pessoa + ')' : ''}: "${n.titulo}" — ${n.status}.`);
+        gerarPendenciaRetorno(n);
+      } else {
+        Object.assign(dm, dados);
+        mudarStatusDemanda(dm, d.status);
+      }
+      toast('Demanda salva');
+    }
+  });
+}
+
+/* ---------- Nota ---------- */
+function formNota(clienteId) {
+  abrirDrawer({
+    titulo: 'Nova nota na linha do tempo',
+    corpo: `${campoCliente(clienteId)}<div class="campo"><label for="nt-txt">Nota</label><textarea id="nt-txt" name="texto" required placeholder="Ex.: Reunião com o Paulo — aprovou o escopo da fase 2."></textarea></div>`,
+    textoSalvar: 'Registrar',
+    aoSalvar: d => {
+      const c = clienteDoForm(d); if (!c) return false;
+      registrar(c.id, 'nota', d.texto.trim());
+      toast(`Nota registrada em ${c.nome}`);
+    }
+  });
+}
+
+/* ---------- Projeto ---------- */
+function linhaEtapa(e = {}) {
+  return `<div class="etapa-linha" data-etapa="${esc(e.id || uid())}">
+    <input type="checkbox" class="e-feito" ${e.feito ? 'checked' : ''} aria-label="Etapa concluída">
+    <input type="text" class="e-nome" value="${esc(e.nome)}" placeholder="Nome da etapa">
+    <input type="date" class="e-data" value="${esc(e.data)}">
+    <button type="button" class="btn-icone" data-action="pj-remover-etapa" aria-label="Remover etapa">×</button>
+  </div>`;
+}
+function formProjeto(p, clienteId) {
+  const novo = !p;
+  p = p || { clienteId, status: 'Planejado', etapas: ['Kickoff', 'Mapeamento do processo', 'Construção no Pipefy', 'Validação com o cliente', 'Treinamento', 'Go-live'].map(nome => ({ id: uid(), nome, data: '', feito: false })) };
+  abrirDrawer({
+    titulo: novo ? 'Novo projeto' : 'Editar projeto',
+    corpo: `
+      <div class="campo"><label for="pj-nome">Nome do projeto</label><input id="pj-nome" type="text" name="nome" value="${esc(p.nome)}" placeholder="Ex.: Implantação pipe de Compras" required></div>
+      <div class="campo"><label for="pj-st">Status</label><select id="pj-st" name="status">${opcoes(STATUS_PROJETO, p.status)}</select></div>
+      <div class="campo"><span class="rotulo">Etapas / marcos</span><div id="pj-etapas">${p.etapas.map(linhaEtapa).join('')}</div>
+        <div><button type="button" class="btn btn-sec btn-sm" data-action="pj-add-etapa">+ Etapa</button></div></div>`,
+    rodapeExtra: novo ? '' : `<button type="button" class="btn btn-ghost" data-action="pj-excluir" data-id="${p.id}">Excluir</button>`,
+    aoSalvar: (d, form) => {
+      const etapas = $$('.etapa-linha', form).map(l => ({ id: l.dataset.etapa, nome: $('.e-nome', l).value.trim(), data: $('.e-data', l).value, feito: $('.e-feito', l).checked })).filter(e => e.nome);
+      if (novo) {
+        db.projetos.push({ id: uid(), clienteId: p.clienteId, nome: d.nome.trim(), status: d.status, etapas });
+        registrar(p.clienteId, 'projeto', `Projeto criado: "${d.nome.trim()}" com ${plural(etapas.length, 'etapa', 'etapas')}.`);
+      } else {
+        if (p.status !== d.status) registrar(p.clienteId, 'projeto', `Projeto "${p.nome}": ${p.status} → ${d.status}.`);
+        Object.assign(p, { nome: d.nome.trim(), status: d.status, etapas });
+      }
+      toast('Projeto salvo');
+    }
+  });
+}
+
+/* ---------- Modelo ---------- */
+function formModelo(m) {
+  const novo = !m; m = m || {};
+  abrirDrawer({
+    titulo: novo ? 'Novo modelo' : 'Editar modelo',
+    corpo: `<div class="campo"><label for="md-nome">Nome</label><input id="md-nome" type="text" name="nome" value="${esc(m.nome)}" required></div>
+      <div class="campo"><label for="md-txt">Texto</label><textarea id="md-txt" name="texto" style="min-height:220px" required>${esc(m.texto)}</textarea>
+      <span class="ajuda">Use {cliente}, {contato}, {assunto}, {data} e {retorno}.</span></div>`,
+    aoSalvar: d => { if (novo) db.modelos.push({ id: uid(), ...d }); else Object.assign(m, d); toast('Modelo salvo'); }
+  });
+}
+
+/* =====================================================================
+   BUSCA GLOBAL
+   ===================================================================== */
+let buscaSel = 0;
+function abrirBusca() {
+  fecharMenuNovo();
+  document.body.classList.add('busca-aberta');
+  const inp = $('#busca-input'); inp.value = ''; atualizarBusca(); setTimeout(() => inp.focus(), 20);
+}
+function fecharBusca() { document.body.classList.remove('busca-aberta'); }
+function resultadosBusca(q) {
+  q = norm(q); if (!q) return [];
+  const r = [];
+  db.clientes.forEach(c => { if (norm(`${c.nome} ${c.cnpj} ${c.segmento} ${c.responsavel}`).includes(q)) r.push({ c, tipo: 'Cliente', t: c.nome, s: `${c.status} · ${c.segmento || ''}`, href: `#/cliente/${c.id}` }); });
+  db.contatos.forEach(ct => { if (norm(`${ct.nome} ${ct.email} ${ct.cargo} ${ct.telefone}`).includes(q)) { const c = cliente(ct.clienteId); r.push({ c, tipo: 'Contato', t: ct.nome, s: `${c?.nome || ''} · ${ct.cargo || ct.email || ''}`, href: `#/cliente/${ct.clienteId}/contatos` }); } });
+  db.followups.forEach(f => { if (norm(`${f.assunto} ${f.mensagem}`).includes(q)) { const c = cliente(f.clienteId); r.push({ c, tipo: 'Follow-up', t: f.assunto, s: `${c?.nome || ''} · ${f.status}`, href: `#/cliente/${f.clienteId}/followups` }); } });
+  db.demandas.forEach(d => { if (norm(`${d.titulo} ${d.descricao} ${d.area} ${d.pessoa}`).includes(q)) { const c = cliente(d.clienteId); r.push({ c, tipo: 'Demanda', t: d.titulo, s: `${c?.nome || ''} · ${d.area} · ${d.status}`, href: `#/cliente/${d.clienteId}/demandas` }); } });
+  return r.slice(0, 40);
+}
+function atualizarBusca() {
+  const q = $('#busca-input').value; const res = resultadosBusca(q); buscaSel = 0;
+  $('#busca-res').innerHTML = !q.trim() ? '<div class="vazio" style="margin:6px">Digite para buscar. <kbd style="border-color:var(--borda)">Esc</kbd> fecha.</div>'
+    : res.length ? res.map((x, i) => `<a class="res ${i === 0 ? 'sel' : ''}" href="${x.href}" data-action="busca-ir">${avatar(x.c, 'sm')}<div><div class="t">${esc(x.t)}</div><div class="s">${esc(x.s)}</div></div><span class="tag">${x.tipo}</span></a>`).join('')
+    : '<div class="vazio" style="margin:6px">Nada encontrado.</div>';
+}
+
+/* =====================================================================
+   AÇÕES (delegação de eventos)
+   ===================================================================== */
+function fecharMenuNovo() { $('#novo-menu').hidden = true; }
+const fuPorId = id => db.followups.find(x => x.id === id);
+const dmPorId = id => db.demandas.find(x => x.id === id);
+
+const acoes = {
+  'drawer-fechar': fecharDrawer,
+  'novo-toggle': () => { const m = $('#novo-menu'); m.hidden = !m.hidden; },
+  'novo': el => {
+    fecharMenuNovo();
+    const cid = clienteDaRota();
+    ({ cliente: () => formCliente(), followup: () => formFollowup(null, cid), demanda: () => formDemanda(null, cid), nota: () => formNota(cid) })[el.dataset.tipo]();
+  },
+  'busca-abrir': abrirBusca,
+  'busca-ir': fecharBusca,
+
+  /* Clientes */
+  'cl-abrir': el => { location.hash = `#/cliente/${el.dataset.id}`; },
+  'cl-editar': el => formCliente(cliente(el.dataset.id)),
+  'cl-saude-auto': el => { const c = cliente(el.dataset.id); c.saude = 'auto'; registrar(c.id, 'cliente', 'Saúde definida como automática.'); persistir(); },
+  'cl-excluir': el => {
+    const c = cliente(el.dataset.id);
+    if (!confirm(`Excluir ${c.nome} e TODO o histórico (contatos, follow-ups, demandas, projetos)?\n\nEssa ação não pode ser desfeita.`)) return;
+    ['contatos', 'followups', 'demandas', 'projetos', 'pendencias', 'timeline'].forEach(k => { db[k] = db[k].filter(x => x.clienteId !== c.id); });
+    db.clientes = db.clientes.filter(x => x.id !== c.id);
+    location.hash = '#/clientes'; persistir(); toast('Cliente excluído');
+  },
+
+  /* Contatos */
+  'ct-novo': el => formContato(el.dataset.cliente),
+  'ct-editar': el => { const ct = contato(el.dataset.id); formContato(ct.clienteId, ct); },
+  'ct-excluir': el => {
+    const ct = contato(el.dataset.id); if (!confirm(`Excluir o contato ${ct.nome}?`)) return;
+    db.contatos = db.contatos.filter(x => x.id !== ct.id);
+    registrar(ct.clienteId, 'contato', `Contato removido: ${ct.nome}.`); persistir();
+  },
+
+  /* Follow-ups */
+  'fu-cobrei': el => {
+    const f = fuPorId(el.dataset.id); const t = hoje();
+    f.tentativas = (Number(f.tentativas) || 1) + 1;
+    f.ultimaCobranca = t;
+    f.proximaCobranca = sugerirProximaCobranca(t, f.tentativas);
+    registrar(f.clienteId, 'followup', `Cobrei de novo: "${f.assunto}" (${f.tentativas}ª tentativa). Próxima cobrança: ${fmtData(f.proximaCobranca)}.`);
+    const escalou = aplicarEscalonamento(f);
+    persistir();
+    if (escalou) { sugerirEmRisco(f.clienteId); persistir(); toast('Follow-up escalonado: 3 tentativas sem resposta', 'erro'); }
+    else toast(`Próxima cobrança: ${fmtData(f.proximaCobranca)}`);
+  },
+  'fu-respondeu': el => {
+    const f = fuPorId(el.dataset.id);
+    const resumo = prompt(`O que ${cliente(f.clienteId)?.nome} respondeu sobre "${f.assunto}"? (opcional)`, '');
+    if (resumo === null && !confirm('Marcar como respondido sem anotar a resposta?')) return;
+    f.status = FU.RESPONDIDO; f.dataResposta = hoje();
+    registrar(f.clienteId, 'followup', `Cliente respondeu: "${f.assunto}"${resumo ? ' — ' + resumo : ''}.`);
+    persistir(); toast('Marcado como respondido');
+  },
+  'fu-concluir': el => {
+    const f = fuPorId(el.dataset.id); f.status = FU.CONCLUIDO;
+    registrar(f.clienteId, 'followup', `Follow-up concluído: "${f.assunto}".`); persistir(); toast('Follow-up concluído');
+  },
+  'fu-editar': el => formFollowup(fuPorId(el.dataset.id)),
+  'fu-msg': el => abrirMensagens(`fu:${el.dataset.id}`),
+  'fu-excluir': el => {
+    const f = fuPorId(el.dataset.id); if (!confirm(`Excluir o follow-up "${f.assunto}"?`)) return;
+    db.followups = db.followups.filter(x => x.id !== f.id);
+    registrar(f.clienteId, 'followup', `Follow-up excluído: "${f.assunto}".`); fecharDrawer(); persistir();
+  },
+  'fu-filtro': el => { ui.fuFiltro.status = el.dataset.status; render(); },
+
+  /* Demandas */
+  'dm-editar': el => formDemanda(dmPorId(el.dataset.id)),
+  'dm-concluir': el => { mudarStatusDemanda(dmPorId(el.dataset.id), DM_CONCLUIDA); persistir(); },
+  'dm-msg': el => abrirMensagens(`dm:${el.dataset.id}`),
+  'dm-excluir': el => {
+    const d = dmPorId(el.dataset.id); if (!confirm(`Excluir a demanda "${d.titulo}"?`)) return;
+    db.demandas = db.demandas.filter(x => x.id !== d.id);
+    db.pendencias = db.pendencias.filter(p => p.demandaId !== d.id);
+    registrar(d.clienteId, 'demanda', `Demanda excluída: "${d.titulo}".`); fecharDrawer(); persistir();
+  },
+  'dm-visao': el => { ui.dmVisao = el.dataset.v; render(); },
+  'dm-limpar-filtro': () => { ui.dmFiltro = { area: '', cliente: '' }; render(); },
+  'filtrar-area': (el, e) => { e.preventDefault(); ui.dmFiltro.area = el.dataset.area; ui.dmVisao = 'kanban'; location.hash = '#/demandas'; render(); },
+
+  /* Pendências de retorno */
+  'pd-feito': el => {
+    const p = db.pendencias.find(x => x.id === el.dataset.id);
+    p.concluida = true; p.concluidaEm = new Date().toISOString();
+    const d = dmPorId(p.demandaId);
+    registrar(p.clienteId, 'demanda', `Retorno dado ao cliente${d ? ` sobre "${d.titulo}"` : ''}.`);
+    if (d && d.status === DM_RETORNAR) mudarStatusDemanda(d, DM_CONCLUIDA, { semPendencia: true });
+    persistir(); toast('Retorno registrado');
+  },
+
+  /* Projetos */
+  'pj-novo': el => formProjeto(null, el.dataset.cliente),
+  'pj-editar': el => formProjeto(db.projetos.find(x => x.id === el.dataset.id)),
+  'pj-excluir': el => {
+    const p = db.projetos.find(x => x.id === el.dataset.id); if (!confirm(`Excluir o projeto "${p.nome}"?`)) return;
+    db.projetos = db.projetos.filter(x => x.id !== p.id);
+    registrar(p.clienteId, 'projeto', `Projeto excluído: "${p.nome}".`); fecharDrawer(); persistir();
+  },
+  'pj-add-etapa': () => { $('#pj-etapas').insertAdjacentHTML('beforeend', linhaEtapa()); $('#pj-etapas .etapa-linha:last-child .e-nome').focus(); },
+  'pj-remover-etapa': el => el.closest('.etapa-linha').remove(),
+
+  /* Modelos */
+  'md-novo': () => formModelo(),
+  'md-editar': el => formModelo(db.modelos.find(m => m.id === el.dataset.id)),
+  'md-excluir': el => { const m = db.modelos.find(x => x.id === el.dataset.id); if (confirm(`Excluir o modelo "${m.nome}"?`)) { db.modelos = db.modelos.filter(x => x.id !== m.id); persistir(); } },
+  'md-copiar': el => { const m = db.modelos.find(x => x.id === el.dataset.id); copiarTexto(preencher(m.texto, contextoMensagem(ui.modeloCtx))); },
+  'msg-copiar': el => copiarTexto($(`textarea[data-modelo="${el.dataset.id}"]`).value),
+
+  /* Configurações */
+  'cfg-exportar': () => {
+    const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `central-cs-backup-${hoje()}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('Backup exportado');
+  },
+  'cfg-importar': () => $('#arquivo-importar').click(),
+  'cfg-apagar-exemplo': () => {
+    if (!confirm('Apagar os 3 clientes de exemplo e tudo ligado a eles?')) return;
+    const ids = new Set(db.clientes.filter(c => c.exemplo).map(c => c.id));
+    db.clientes = db.clientes.filter(c => !ids.has(c.id));
+    ['contatos', 'followups', 'demandas', 'projetos', 'pendencias', 'timeline'].forEach(k => { db[k] = db[k].filter(x => !ids.has(x.clienteId) && !x.exemplo); });
+    persistir(); toast('Dados de exemplo apagados');
+  },
+  'cfg-limpar': () => {
+    const r = prompt('Isso apaga TODOS os dados deste navegador. Recomendo exportar um backup antes.\n\nDigite APAGAR para confirmar:');
+    if (r !== 'APAGAR') { if (r !== null) toast('Nada foi apagado.'); return; }
+    const cfg = db.config, modelos = db.modelos;
+    db = estadoVazio(); db.config = cfg; db.modelos = modelos;
+    persistir(); toast('Todos os dados foram apagados');
+  }
+};
+
+/* Alterações em selects e checkboxes */
+const mudancas = {
+  'cli-filtro': el => { ui.cliFiltro[el.dataset.campo] = el.value; atualizarListaClientes(); },
+  'dm-filtro': el => { ui.dmFiltro[el.dataset.campo] = el.value; render(); },
+  'fu-filtro-cliente': el => { ui.fuFiltro.cliente = el.value; render(); },
+  'dm-status': el => { mudarStatusDemanda(dmPorId(el.dataset.id), el.value); persistir(); },
+  'md-ctx': el => { ui.modeloCtx = el.value; render(); },
+  'pj-etapa': el => {
+    const p = db.projetos.find(x => x.id === el.dataset.id); const e = p.etapas.find(x => x.id === el.dataset.etapa);
+    e.feito = el.checked;
+    registrar(p.clienteId, 'projeto', `Projeto "${p.nome}": etapa "${e.nome}" ${e.feito ? 'concluída' : 'reaberta'} (${percentualProjeto(p)}%).`);
+    persistir();
+  }
+};
+
+/* Formulários inline (fora do painel lateral) */
+const formularios = {
+  'nota-rapida': (form, d) => { registrar(form.dataset.id, 'nota', d.texto.trim()); persistir(); toast('Nota registrada'); },
+  'config': (form, d) => {
+    const linhas = s => s.split('\n').map(x => x.trim()).filter(Boolean);
+    db.config.cadencia = [d.cad1, d.cad2, d.cad3].map(n => Math.max(1, Number(n) || 1));
+    db.config.limiteSemContato = Math.max(1, Number(d.limite) || 15);
+    db.config.responsaveis = linhas(d.responsaveis);
+    db.config.areas = linhas(d.areas).length ? linhas(d.areas) : configPadrao().areas;
+    persistir(); toast('Configurações salvas');
+  }
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!e.target.closest('.novo-wrap')) fecharMenuNovo();
+  if (!el) return;
+  const fn = acoes[el.dataset.action]; if (!fn) return;
+  if (el.tagName === 'BUTTON' || el.dataset.action === 'cl-abrir') e.preventDefault();
+  if (el.dataset.action === 'cl-abrir' && e.target.closest('a')) return; // links internos ao card
+  fn(el, e);
+});
+document.addEventListener('change', e => { const el = e.target.closest('[data-change]'); if (el && mudancas[el.dataset.change]) mudancas[el.dataset.change](el, e); });
+document.addEventListener('input', e => {
+  if (e.target.id === 'cli-busca') { ui.cliFiltro.q = e.target.value; atualizarListaClientes(); }
+  if (e.target.id === 'busca-input') atualizarBusca();
+});
+document.addEventListener('submit', e => {
+  const form = e.target.closest('[data-form]'); if (!form) return;
+  e.preventDefault(); formularios[form.dataset.form](form, Object.fromEntries(new FormData(form)));
+});
+$('#overlay').addEventListener('click', () => { fecharDrawer(); fecharBusca(); });
+
+/* Arrastar e soltar no Kanban */
+document.addEventListener('dragstart', e => {
+  const card = e.target.closest?.('.kcard'); if (!card) return;
+  e.dataTransfer.setData('text/plain', card.dataset.id); e.dataTransfer.effectAllowed = 'move';
+  card.classList.add('arrastando');
+});
+document.addEventListener('dragend', e => { e.target.closest?.('.kcard')?.classList.remove('arrastando'); $$('.kcol.sobre').forEach(c => c.classList.remove('sobre')); });
+document.addEventListener('dragover', e => {
+  const col = e.target.closest?.('.kcol'); if (!col) return;
+  e.preventDefault(); $$('.kcol.sobre').forEach(c => c !== col && c.classList.remove('sobre')); col.classList.add('sobre');
+});
+document.addEventListener('drop', e => {
+  const col = e.target.closest?.('.kcol'); if (!col) return;
+  e.preventDefault();
+  const d = dmPorId(e.dataTransfer.getData('text/plain'));
+  if (d && d.status !== col.dataset.status) { mudarStatusDemanda(d, col.dataset.status); persistir(); }
+  else col.classList.remove('sobre');
+});
+
+/* Atalhos de teclado: "/" ou Ctrl+K abrem a busca; Esc fecha painéis */
+document.addEventListener('keydown', e => {
+  const digitando = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); abrirBusca(); return; }
+  if (e.key === '/' && !digitando) { e.preventDefault(); abrirBusca(); return; }
+  if (e.key === 'Escape') { fecharBusca(); fecharDrawer(); fecharMenuNovo(); return; }
+  if (document.body.classList.contains('busca-aberta')) {
+    const itens = $$('#busca-res .res'); if (!itens.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault(); buscaSel = (buscaSel + (e.key === 'ArrowDown' ? 1 : -1) + itens.length) % itens.length;
+      itens.forEach((x, i) => x.classList.toggle('sel', i === buscaSel)); itens[buscaSel].scrollIntoView({ block: 'nearest' });
+    }
+    if (e.key === 'Enter') { e.preventDefault(); location.hash = itens[buscaSel].getAttribute('href'); fecharBusca(); }
+  }
+  if (e.key === 'Enter' && e.target.classList?.contains('card-cliente')) e.target.click();
+});
+
+/* Importar backup */
+$('#arquivo-importar').addEventListener('change', async e => {
+  const arq = e.target.files[0]; e.target.value = ''; if (!arq) return;
+  try {
+    const dados = JSON.parse(await arq.text());
+    if (!dados || !Array.isArray(dados.clientes)) throw new Error('formato inválido');
+    if (!confirm(`Importar backup com ${plural(dados.clientes.length, 'cliente', 'clientes')}?\n\nOs dados atuais deste navegador serão SUBSTITUÍDOS.`)) return;
+    db = Object.assign(estadoVazio(), dados);
+    db.config = Object.assign(configPadrao(), dados.config);
+    persistir(); toast('Backup importado com sucesso');
+  } catch (err) { toast('Arquivo inválido: não é um backup da Central de CS.', 'erro'); }
+});
+
+window.addEventListener('hashchange', () => { fecharDrawer(); fecharBusca(); render(); window.scrollTo(0, 0); });
+
+/* =====================================================================
+   DADOS DE EXEMPLO (3 clientes fictícios, marcados com exemplo: true)
+   ===================================================================== */
+function semearExemplos() {
+  const t = hoje();
+  const ts = (dias, hora = 10) => new Date(parseD(addDias(t, dias)).getTime() + (hora + 3) * 3600000).toISOString(); // hora em Brasília
+  const ex = { exemplo: true };
+  const c1 = { id: uid(), ...ex, nome: 'Agro Vale Alimentos', cnpj: '12.345.678/0001-90', segmento: 'Agronegócio', status: 'Em implantação', saude: 'auto', responsavel: 'Marina (Operacional)', pipefyUrl: 'https://app.pipefy.com/', observacoes: 'Decisor é o Paulo (diretor financeiro). Prefere WhatsApp.\nNão mandar nada na sexta à tarde: é dia de fechamento.', dataInicio: addDias(t, -45), criadoEm: ts(-45) };
+  const c2 = { id: uid(), ...ex, nome: 'Construtora Horizonte', cnpj: '', segmento: 'Construção civil', status: 'Ativo', saude: 'auto', responsavel: 'Rafael (Operacional)', pipefyUrl: 'https://app.pipefy.com/', observacoes: 'Contrato renova em março. Sempre copiar a Ana (TI) nos e-mails.\nGostam de resumo por escrito depois de cada reunião.', dataInicio: addDias(t, -210), criadoEm: ts(-210) };
+  const c3 = { id: uid(), ...ex, nome: 'Clínica Bem Estar', cnpj: '98.765.432/0001-10', segmento: 'Saúde', status: 'Ativo', saude: 'auto', responsavel: 'Marina (Operacional)', pipefyUrl: '', observacoes: 'Sensíveis a prazo: já houve atraso na entrega do pipe de Agendamentos.\nA Dra. Carla só responde no fim do dia.', dataInicio: addDias(t, -120), criadoEm: ts(-120) };
+  db.clientes.push(c1, c2, c3);
+
+  const ct = (cli, nome, cargo, email, telefone, principal) => { const o = { id: uid(), ...ex, clienteId: cli.id, nome, cargo, email, telefone, principal }; db.contatos.push(o); return o; };
+  const p1 = ct(c1, 'Paulo Mendes', 'Diretor financeiro', 'paulo@exemplo.com.br', '+55 16 99999-0001', true);
+  const p2 = ct(c1, 'Lívia Castro', 'Analista de compras', 'livia@exemplo.com.br', '+55 16 99999-0002', false);
+  const p3 = ct(c2, 'Ana Ribeiro', 'Coordenadora de TI', 'ana@exemplo.com.br', '+55 11 98888-0001', true);
+  const p4 = ct(c2, 'Marcos Lima', 'Gerente de obras', 'marcos@exemplo.com.br', '+55 11 98888-0002', false);
+  const p5 = ct(c3, 'Dra. Carla Souza', 'Sócia-diretora', 'carla@exemplo.com.br', '+55 21 97777-0001', true);
+
+  const fu = o => db.followups.push({ id: uid(), ...ex, criadoEm: ts(-1), ...o });
+  fu({ clienteId: c1.id, contatoId: p1.id, canal: 'WhatsApp', assunto: 'Validação do pipe de Compras', mensagem: 'Enviei o link do pipe em homologação e pedi validação dos campos da fase "Aprovação".', dataEnvio: addDias(t, -4), tentativas: 1, proximaCobranca: addDias(t, -1), status: FU.AGUARDANDO });
+  fu({ clienteId: c1.id, contatoId: p2.id, canal: 'E-mail', assunto: 'Planilha de fornecedores para importação', mensagem: 'Pedi a planilha atualizada de fornecedores para importar no banco de dados.', dataEnvio: addDias(t, -2), tentativas: 1, proximaCobranca: t, status: FU.AGUARDANDO });
+  fu({ clienteId: c2.id, contatoId: p3.id, canal: 'E-mail', assunto: 'Agendar reunião trimestral (QBR)', mensagem: 'Sugeri três datas para a reunião de resultados do trimestre.', dataEnvio: addDias(t, -1), tentativas: 1, proximaCobranca: addDias(t, 3), status: FU.AGUARDANDO });
+  fu({ clienteId: c2.id, contatoId: p4.id, canal: 'Reunião', assunto: 'Feedback do novo relatório de medições', mensagem: '', dataEnvio: addDias(t, -9), tentativas: 1, proximaCobranca: '', status: FU.RESPONDIDO, dataResposta: addDias(t, -6) });
+  fu({ clienteId: c3.id, contatoId: p5.id, canal: 'E-mail', assunto: 'Aprovação do ajuste no formulário de agendamento', mensagem: 'Enviei o print do novo formulário e pedi aprovação para publicar.', dataEnvio: addDias(t, -20), ultimaCobranca: addDias(t, -18), tentativas: 3, proximaCobranca: addDias(t, -2), status: FU.ESCALAR });
+
+  const dm = o => { const d = { id: uid(), ...ex, criadoEm: ts(-5), atualizadoEm: ts(-1), descricao: '', ...o }; db.demandas.push(d); return d; };
+  dm({ clienteId: c1.id, titulo: '2ª via do boleto de setembro', descricao: 'Paulo pediu a 2ª via com nova data de vencimento.', area: 'Financeiro', pessoa: 'Juliana (Financeiro)', prioridade: 'Alta', prazo: addDias(t, 1), status: 'Aguardando área', retorno: 'Enviar o boleto atualizado ao Paulo e confirmar o novo vencimento.' });
+  dm({ clienteId: c1.id, titulo: 'Automação de aprovação por alçada', descricao: 'Compras acima de R$ 10 mil devem ir para o diretor.', area: 'Operacional', pessoa: 'Marina (Operacional)', prioridade: 'Média', prazo: addDias(t, 10), status: 'Em andamento', retorno: '' });
+  dm({ clienteId: c2.id, titulo: 'Novo campo "Etapa da obra" no pipe de Medições', area: 'Operacional', pessoa: 'Rafael (Operacional)', prioridade: 'Baixa', prazo: addDias(t, -2), status: 'Enviada para área', retorno: 'Avisar a Ana quando o campo estiver publicado.' });
+  dm({ clienteId: c2.id, titulo: 'Proposta de expansão para o RH', descricao: 'Marcos comentou que o RH quer um pipe de admissão.', area: 'Comercial', pessoa: 'Bruno (Comercial)', prioridade: 'Média', prazo: addDias(t, 5), status: 'Nova', retorno: '' });
+  const d5 = dm({ clienteId: c3.id, titulo: 'E-mail automático duplicado', descricao: 'Pacientes recebem duas confirmações de agendamento.', area: 'Suporte Pipefy', pessoa: 'Marina (Operacional)', prioridade: 'Urgente', prazo: addDias(t, -1), status: DM_RETORNAR, retorno: 'Explicar que a automação duplicada foi removida e pedir para avisarem se ocorrer de novo.' });
+  db.pendencias.push({ id: uid(), ...ex, clienteId: c3.id, demandaId: d5.id, titulo: `Dar retorno ao cliente: ${d5.titulo}`, data: addDias(t, -1), concluida: false });
+
+  db.projetos.push({ id: uid(), ...ex, clienteId: c1.id, nome: 'Implantação pipe de Compras', status: 'Em andamento', etapas: [
+    { id: uid(), nome: 'Kickoff', data: addDias(t, -40), feito: true },
+    { id: uid(), nome: 'Mapeamento do processo', data: addDias(t, -30), feito: true },
+    { id: uid(), nome: 'Construção no Pipefy', data: addDias(t, -8), feito: true },
+    { id: uid(), nome: 'Validação com o cliente', data: addDias(t, 2), feito: false },
+    { id: uid(), nome: 'Treinamento', data: addDias(t, 9), feito: false },
+    { id: uid(), nome: 'Go-live', data: addDias(t, 14), feito: false }
+  ] });
+  db.projetos.push({ id: uid(), ...ex, clienteId: c2.id, nome: 'Pipe de Medições v2', status: 'Em andamento', etapas: [
+    { id: uid(), nome: 'Levantamento de melhorias', data: addDias(t, -15), feito: true },
+    { id: uid(), nome: 'Ajustes nos formulários', data: addDias(t, 4), feito: false },
+    { id: uid(), nome: 'Relatório para diretoria', data: addDias(t, 20), feito: false }
+  ] });
+
+  const tl = (cli, dias, tipo, texto, hora) => db.timeline.push({ id: uid(), ...ex, clienteId: cli.id, ts: ts(dias, hora), tipo, texto });
+  tl(c1, -45, 'cliente', 'Cliente cadastrado (Onboarding).');
+  tl(c1, -40, 'nota', 'Kickoff realizado com Paulo e Lívia. Escopo: pipe de Compras com aprovação por alçada.');
+  tl(c1, -4, 'followup', 'Follow-up enviado por WhatsApp: "Validação do pipe de Compras".', 15);
+  tl(c1, -3, 'demanda', 'Demanda criada para Financeiro (Juliana): "2ª via do boleto de setembro".');
+  tl(c2, -210, 'cliente', 'Cliente cadastrado (Onboarding).');
+  tl(c2, -9, 'nota', 'Reunião com Marcos: gostou do relatório de medições; pediu campo "Etapa da obra".', 14);
+  tl(c2, -6, 'followup', 'Cliente respondeu: "Feedback do novo relatório de medições" — aprovado sem ajustes.');
+  tl(c3, -120, 'cliente', 'Cliente cadastrado (Onboarding).');
+  tl(c3, -20, 'followup', 'Follow-up enviado por E-mail: "Aprovação do ajuste no formulário de agendamento".');
+  tl(c3, -18, 'alerta', 'Follow-up "Aprovação do ajuste no formulário de agendamento" escalonado após 3 tentativas sem resposta.');
+  tl(c3, -1, 'demanda', 'Demanda "E-mail automático duplicado": Em andamento → Retornar ao cliente.', 17);
+}
+
+/* =====================================================================
+   INICIALIZAÇÃO
+   ===================================================================== */
+(function iniciar() {
+  $('#logo').innerHTML = LOGO_URL ? `<img src="${esc(LOGO_URL)}" alt="Stegia">` : 'stegia<span class="ponto">.</span>';
+  carregar();
+  atualizarDatalists();
+  if (!location.hash) history.replaceState(null, '', '#/hoje');
+  render();
+})();
+</script>
+</body>
+</html>
